@@ -204,8 +204,8 @@ export default function MenuSection({
             <div className="card-analogue p-6 bg-fog/50 flex items-center gap-4 border border-fog">
               <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0 bg-mist">
                 <Image
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80"
-                  alt="Patron portrait"
+                  src="/Assets/ethiopian-patron-selamawit.jpg"
+                  alt="Selamawit T. - Patron at Chillax Coffee"
                   fill
                   className="object-cover"
                 />

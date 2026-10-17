@@ -60,19 +60,19 @@ export default function Hero({ onOpenOrderModal }: HeroProps) {
               <span
                 className="w-8 h-8 rounded-full border-2 border-pure-white bg-cover bg-center shrink-0"
                 style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&q=80')`,
+                  backgroundImage: `url('/Assets/ethiopian-customer-1.jpg')`,
                 }}
               />
               <span
                 className="w-8 h-8 rounded-full border-2 border-pure-white bg-cover bg-center shrink-0"
                 style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=100&q=80')`,
+                  backgroundImage: `url('/Assets/ethiopian-customer-2.jpg')`,
                 }}
               />
               <span
                 className="w-8 h-8 rounded-full border-2 border-pure-white bg-cover bg-center shrink-0"
                 style={{
-                  backgroundImage: `url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=100&q=80')`,
+                  backgroundImage: `url('/Assets/ethiopian-customer-3.jpg')`,
                 }}
               />
             </div>
