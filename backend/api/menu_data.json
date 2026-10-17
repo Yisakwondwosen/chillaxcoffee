@@ -45,20 +45,6 @@
       "is_featured": true
     },
     {
-      "id": 5,
-      "item_id": "spris",
-      "category_slug": "juices",
-      "category_name": "Fresh Juices",
-      "name": "Chillax Sunrise Spris",
-      "price_etb": "180.00",
-      "badge": "100% Fresh",
-      "description": "The iconic Addis tri-color layer: buttery ripe avocado, luscious golden mango, and zesty papaya drizzled with fresh lime & vimto.",
-      "tasting_notes": "Rich Avocado • Sun-Ripened Mango • Zesty Lime",
-      "image_url": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": true
-    },
-    {
       "id": 6,
       "item_id": "karkade",
       "category_slug": "juices",
