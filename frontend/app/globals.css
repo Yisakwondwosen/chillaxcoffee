@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-cobalt-signal: #002fff;
+    --color-pure-white: #ffffff;
+    --color-graphite: #171717;
+    --color-carbon: #070707;
+    --color-ink: #000000;
+    --color-fog: #ededed;
+    --color-mist: #b9b9b9;
+    --color-dove: #c3c3c3;
+    --color-iron: #696969;
+    --color-cobalt-mist: #00368c;
+
+    --font-retro: 'Fraunces', 'Recife', 'Ogg', 'Cooper Black', serif;
+    --font-serif: 'EB Garamond', 'Cormorant Garamond', Georgia, serif;
+    --font-sans: Inter, 'Graphik Medium', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+
+    --page-max-width: 1200px;
+    --section-gap: 50px;
+    --card-padding: 20px;
+    --element-gap: 10px;
+
+    --radius-cards: 20px;
+    --radius-pills: 100px;
+    --radius-images: 30px;
+    --radius-inputs: 15px;
+    --radius-buttons: 10px;
+
+    --shadow-subtle: rgba(255, 255, 255, 0.15) 0px 0px 0px 1px inset;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--color-pure-white);
+    color: var(--color-graphite);
+  }
+
+  body {
+    overflow-x: hidden;
+    position: relative;
+    background-color: var(--color-pure-white);
+    color: var(--color-graphite);
+    font-family: var(--font-sans);
+    font-weight: 400;
+  }
+
+  .font-retro {
+    font-family: var(--font-retro);
+    font-optical-sizing: auto;
+  }
+
+  .font-editorial {
+    font-family: var(--font-serif);
+    font-weight: 400;
+  }
+}
+
+/* --- Analogue aF-1 Component Classes --- */
+
+.btn-cobalt {
+  background-color: #ebe3d6;
+  color: #171717;
+  font-family: Inter, 'Graphik Medium', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 1px solid #171717;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: all 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.btn-cobalt:hover {
+  background-color: #ded5c6;
+  border-color: #000000;
+  transform: translateY(-1px);
+}
+.btn-cobalt:active {
+  transform: scale(0.97);
+}
+.btn-cobalt:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn-ghost-editorial {
+  background-color: transparent;
+  color: #171717;
+  font-family: Inter, 'Graphik Medium', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+  padding: 10px 20px;
+  border: 1px solid #ededed;
+  border-radius: 10px;
+  box-shadow: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+}
+.btn-ghost-editorial:hover { border-color: #171717; }
+.btn-ghost-editorial:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.input-editorial {
+  font-family: Inter, 'Graphik Medium', system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #171717;
+  background-color: #ffffff;
+  border: 1px solid #ededed;
+  border-radius: 15px;
+  padding: 14px 18px;
+  outline: none;
+  box-shadow: rgba(255, 255, 255, 0.15) 0px 0px 0px 1px inset;
+  transition: border-color 0.2s ease;
+  width: 100%;
+}
+.input-editorial:focus { border-color: #171717; }
+.input-editorial::placeholder { color: #b9b9b9; }
+
+.scroll-pill {
+  background-color: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(8px);
+  color: #696969;
+  font-family: Inter, 'Graphik Medium', system-ui, sans-serif;
+  font-size: 12px;
+  border-radius: 100px;
+  padding: 8px 18px;
+  border: 1px solid #ededed;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+
+.card-product-render {
+  background-color: #ededed;
+  border-radius: 30px;
+  border: none;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.card-analogue {
+  background-color: #ffffff;
+  border-radius: 20px;
+  border: 1px solid #ededed;
+  box-shadow: none;
+}
+
+.film-strip-left,
+.film-strip-right {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 32px;
+  background-color: #000000;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  pointer-events: none;
+}
+.film-strip-left { left: 0; }
+.film-strip-right { right: 0; }
+
+.sprocket-hole {
+  width: 14px;
+  height: 20px;
+  background-color: #ffffff;
+  border-radius: 3px;
+  opacity: 0.95;
+}
+
+/* Intersection Observer Reveal */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scrollbar hiding for filter pills */
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-none::-webkit-scrollbar { display: none; }
+
+/* Mobile Sticky Conversion Bar */
+@media (max-width: 768px) {
+  .mobile-sticky-conversion {
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+  }
+}

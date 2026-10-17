@@ -1,0 +1,29 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+
+# Python / Django
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3-journal
+staticfiles/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+
+# Vercel
+.vercel/
+
+# OS
+.DS_Store
+Thumbs.db

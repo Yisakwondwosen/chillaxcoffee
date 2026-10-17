@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chillax Coffee | Specialty Coffee House & Neighborhood Lounge • Mekanisa, Addis Ababa</title>
+  <meta name="description" content="Slow down. Sip deep. Chillax. Where single-origin Ethiopian highland roasts meet your favorite neighborhood corner in Mekanisa, Addis Ababa. Artisanal espresso, traditional Jebena brew, fresh spris, and cozy workspace.">
+  <meta name="theme-color" content="#1E1510">
+
+  <!-- OpenGraph / Social Meta -->
+  <meta property="og:title" content="Chillax Coffee | Mekanisa's Neighborhood Sanctuary">
+  <meta property="og:description" content="Experience authentic Ethiopian coffee heritage with warm modern craft. Specialty single-origin roasts, signature macchiatos, and fresh pastry in Mekanisa, Addis Ababa.">
+  <meta property="og:type" content="website">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..800;1,9..144,300..700&family=Noto+Serif+Ethiopic:wght@400;600;700&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <!-- Lenis Smooth Scroll CDN -->
+  <script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+
+  <!-- GSAP & ScrollTrigger CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-primary text-primary antialiased selection:bg-accent-primary selection:text-white">
+
+  <!-- Tactile Analog Film Grain Overlay -->
+  <div class="film-grain" aria-hidden="true"></div>
+
+  <!-- Page Curtain Reveal Transition -->
+  <div id="page-curtain" class="page-curtain" aria-hidden="true">
+    <div class="curtain-loader">
+      <div class="bean-spinner">
+        <svg viewBox="0 0 48 48" class="bean-svg">
+          <path d="M24 4C14 4 6 12 6 22c0 12 10 22 18 22s18-10 18-22c0-10-8-18-18-18zm-2 7c2 5-1 12-5 16-3 3-3 7-1 9 1 1 3 1 4 0 5-5 7-11 5-17-1-4-2-7-3-8z" fill="#C86D51"/>
+        </svg>
+      </div>
+      <p class="curtain-text">ኑ ቡና እንጠጣ</p>
+      <span class="curtain-sub">Warming the cup in Mekanisa...</span>
+    </div>
+  </div>
+
+  <!-- 01_NAVBAR: Floating Glassmorphic Header -->
+  <header class="navbar-wrapper">
+    <nav class="navbar" id="navbar">
+      <!-- Brand Logo -->
+      <a href="#hero" class="brand-logo" aria-label="Chillax Coffee Home">
+        <div class="logo-mark" style="background: transparent; overflow: hidden; width: 44px; height: 44px; border: 1px solid rgba(0,0,0,0.1);">
+          <img src="logo.png" alt="Chillax Botanical Sofa Logo" style="width: 100%; height: 100%; object-fit: contain;">
+        </div>
+        <div class="brand-text-group">
+          <span class="brand-name">CHILLAX</span>
+          <span class="brand-sub">COFFEE • MEKANISA</span>
+        </div>
+      </a>
+
+      <!-- Desktop Nav Links -->
+      <ul class="nav-links">
+        <li><a href="#vibe" class="nav-item">Our Vibe</a></li>
+        <li><a href="#menu" class="nav-item">The Menu</a></li>
+        <li><a href="#origin" class="nav-item">Bean Origin</a></li>
+        <li><a href="#location" class="nav-item">Mekanisa Lounge</a></li>
+        <li><a href="#story" class="nav-item">Ethio Ritual</a></li>
+      </ul>
+
+      <!-- Right Header Actions -->
+      <div class="nav-actions">
+        <!-- Live Status Pill (Real-Time Addis Time calculation) -->
+        <div class="status-pill" id="live-status-pill" title="Mekanisa, Addis Ababa (UTC+3)">
+          <span class="status-dot pulse"></span>
+          <span class="status-text" id="live-status-text">Open Now • Till 9:30 PM</span>
+        </div>
+
+        <!-- Ambient Soundscape Toggle (Cafe lo-fi Ethio-vibes) -->
+        <button id="soundscape-btn" class="icon-toggle-btn" aria-label="Toggle Ethiopian Coffee House Ambiance" title="Ambient Cafe Sounds">
+          <i data-lucide="volume-x" class="w-4 h-4 sound-off"></i>
+          <i data-lucide="volume-2" class="w-4 h-4 sound-on hidden"></i>
+        </button>
+
+        <!-- Order Ahead Primary CTA -->
+        <button class="btn btn-primary btn-sm magnetic-btn" id="open-order-modal">
+          <span>Order Ahead</span>
+          <i data-lucide="coffee" class="w-4 h-4"></i>
+        </button>
+
+        <!-- Mobile Menu Trigger -->
+        <button class="mobile-menu-btn" id="mobile-toggle" aria-label="Toggle navigation menu">
+          <i data-lucide="menu" class="open-icon"></i>
+          <i data-lucide="x" class="close-icon hidden"></i>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="mobile-drawer" id="mobile-drawer">
+      <ul class="mobile-nav-list">
+        <li><a href="#vibe" class="mobile-nav-link">Our Vibe</a></li>
+        <li><a href="#menu" class="mobile-nav-link">The Menu</a></li>
+        <li><a href="#origin" class="mobile-nav-link">Bean Origin & Story</a></li>
+        <li><a href="#location" class="mobile-nav-link">Mekanisa Lounge & Map</a></li>
+        <li><a href="#story" class="mobile-nav-link">The Coffee Ritual</a></li>
+      </ul>
+      <div class="mobile-drawer-footer">
+        <div class="mobile-status">
+          <span class="status-dot pulse"></span>
+          <span>Mekanisa, Addis Ababa • 6:30 AM – 9:30 PM</span>
+        </div>
+        <button class="btn btn-primary w-full" id="mobile-order-trigger">
+          <i data-lucide="coffee" class="w-4 h-4"></i>
+          <span>Order Ahead for Pickup</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 02_HERO: Split-Screen Sensory Hero -->
+  <section class="hero-section" id="hero">
+    <div class="hero-container">
+      <!-- Left Copy Column -->
+      <div class="hero-content">
+        <!-- Eyebrow with location pin -->
+        <div class="hero-eyebrow-badge fade-in-up">
+          <span class="badge-icon"><i data-lucide="map-pin" class="w-3.5 h-3.5"></i></span>
+          <span class="badge-text font-mono">MEKANISA'S NEIGHBORHOOD SANCTUARY</span>
+          <span class="badge-accent">ADDIS ABABA</span>
+        </div>
+
+        <!-- Headline with organic curves -->
+        <h1 class="hero-headline fade-in-up">
+          Slow Down.<br>
+          <span class="italic font-normal">Sip Deep.</span><br>
+          <span class="text-gradient">Chillax.</span>
+        </h1>
+
+        <!-- Subheadline -->
+        <p class="hero-description fade-in-up">
+          Where single-origin Ethiopian highland roasts meet your favorite neighborhood corner in Mekanisa. Pull up a chair, catch the afternoon breeze, and let the macchiato do the talking.
+        </p>
+
+        <!-- Primary & Secondary CTA Group with Magnetic effect -->
+        <div class="hero-cta-group fade-in-up">
+          <a href="#menu" class="btn btn-primary btn-lg magnetic-btn">
+            <span>Explore the Menu</span>
+            <i data-lucide="arrow-down-right" class="w-4 h-4"></i>
+          </a>
+          <a href="#location" class="btn btn-secondary btn-lg magnetic-btn">
+            <i data-lucide="navigation" class="w-4 h-4"></i>
+            <span>Get Directions</span>
+          </a>
+        </div>
+
+        <!-- Hook Story Social Proof / Value Ladder Anchor -->
+        <div class="hero-trust-row fade-in-up">
+          <div class="customer-avatars">
+            <span class="avatar" style="background-image: url('https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80');"></span>
+            <span class="avatar" style="background-image: url('https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80');"></span>
+            <span class="avatar" style="background-image: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80');"></span>
+            <span class="avatar-count font-mono">+850</span>
+          </div>
+          <div class="trust-copy">
+            <div class="stars">★★★★★</div>
+            <p>Mekanisa's favorite daily macchiato & work refuge</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Sensory Visual Column -->
+      <div class="hero-visual-wrapper fade-in-scale">
+        <div class="hero-art-card">
+          <!-- Steaming Cup Visual with Layered Ethiopian Macchiato -->
+          <div class="visual-media-box">
+            <img 
+              src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=1000&q=85" 
+              alt="Artisanal Ethiopian Macchiato poured with golden caramel crema in warm sunlight" 
+              class="hero-main-img"
+              loading="eager"
+            />
+            
+            <!-- Realistic Animated SVG Steam rising from coffee -->
+            <div class="steam-container" aria-hidden="true">
+              <svg class="steam steam-1" viewBox="0 0 100 200">
+                <path d="M40,180 Q60,140 30,100 T50,20" fill="none" stroke="rgba(255,255,255,0.65)" stroke-width="4" stroke-linecap="round"/>
+              </svg>
+              <svg class="steam steam-2" viewBox="0 0 100 200">
+                <path d="M50,190 Q20,130 60,90 T40,10" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="3.5" stroke-linecap="round"/>
+              </svg>
+              <svg class="steam steam-3" viewBox="0 0 100 200">
+                <path d="M60,175 Q40,120 70,80 T50,30" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="3" stroke-linecap="round"/>
+              </svg>
+            </div>
+
+            <!-- Warm Sunbeam & Vignette Overlay -->
+            <div class="sunbeam-overlay"></div>
+          </div>
+
+          <!-- Floating Micro Badges -->
+          <div class="floating-badge badge-roast glass-card">
+            <span class="badge-dot"></span>
+            <div>
+              <span class="mono-label font-mono">TODAY'S ROAST</span>
+              <p class="font-medium">Yirgacheffe Grade 1 Washed</p>
+              <span class="tasting-pill font-mono">Notes: Bergamot • Jasmine • Honey</span>
+            </div>
+          </div>
+
+          <div class="floating-badge badge-buna glass-card">
+            <div class="buna-icon">
+              <!-- Clay Jebena SVG Icon -->
+              <svg viewBox="0 0 24 24" class="w-5 h-5 text-accent-primary" fill="currentColor">
+                <path d="M12 2C8 2 6 5 6 8c0 3 2 5.5 4 6.5V18c0 2 1.5 3 2 3s2-1 2-3v-3.5c2-1 4-3.5 4-6.5 0-3-2-6-6-6zm-1 11.2c-1.8-.8-3-2.6-3-5.2 0-2 1.2-3.8 3-4.5v9.7zm2 0V3.5c1.8.7 3 2.5 3 4.5 0 2.6-1.2 4.4-3 5.2z"/>
+              </svg>
+            </div>
+            <div>
+              <span class="mono-label font-mono">BUNA CEREMONY</span>
+              <p class="font-medium text-sm">Freshly Roasted on Charcoal</p>
+            </div>
+          </div>
+
+          <!-- Decorative Coordinates Tag -->
+          <div class="coords-tag font-mono">
+            <span>8.9782° N, 38.7291° E • MEKANISA, ADDIS</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 05_SENSORY_MARQUEE: Infinite Kinetic Text Ticker -->
+  <div class="marquee-wrapper" aria-hidden="true">
+    <div class="marquee-track">
+      <span class="marquee-item">ROASTED IN ADDIS</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">BREWED IN MEKANISA</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">MACCHIATO CULTURE</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">FRESH PASTRIES</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">GOOD VIBES ONLY</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">CHILLAX COFFEE</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">ኑ ቡና እንጠጣ</span>
+      <span class="marquee-star">✦</span>
+      <!-- Duplicate for seamless loop -->
+      <span class="marquee-item">ROASTED IN ADDIS</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">BREWED IN MEKANISA</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">MACCHIATO CULTURE</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">FRESH PASTRIES</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">GOOD VIBES ONLY</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">CHILLAX COFFEE</span>
+      <span class="marquee-star">✦</span>
+      <span class="marquee-item">ኑ ቡና እንጠጣ</span>
+      <span class="marquee-star">✦</span>
+    </div>
+  </div>
+
+  <!-- 03_THE_VIBE_BENTO_GRID: Asymmetrical Bento Grid Showcase -->
+  <section class="section-padding vibe-section" id="vibe">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-eyebrow font-mono">THE MEKANISA EXPERIENCE</span>
+        <h2 class="section-headline">Designed for Your Daily Rhythm</h2>
+        <p class="section-subheadline">
+          Whether you need a laser-focused workspace at sunrise, an authentic afternoon Jebena buna ritual, or a relaxed evening lounge with friends—Chillax is built around how Addis lives.
+        </p>
+      </div>
+
+      <!-- Bento Grid 4-Card Layout -->
+      <div class="bento-grid">
+        <!-- Card 1: Morning Ritual -->
+        <div class="bento-card bento-morning tilt-card">
+          <div class="card-bg-visual" style="background-image: url('https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?auto=format&fit=crop&w=800&q=80');"></div>
+          <div class="card-gradient"></div>
+          <div class="bento-content">
+            <span class="bento-tag font-mono">6:30 AM – 11:00 AM</span>
+            <h3 class="bento-title">The Morning Ritual</h3>
+            <p class="bento-desc">
+              Sunlit patio seating and strong, velvety double macchiatos to kickstart your day before the Addis hustle begins.
+            </p>
+            <div class="bento-feature-list font-mono">
+              <span>✦ Fresh Fetira & Croissants</span>
+              <span>✦ Express Takeaway</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: Work & Flow -->
+        <div class="bento-card bento-work tilt-card">
+          <div class="bento-content">
+            <div class="bento-icon-box">
+              <i data-lucide="laptop" class="w-6 h-6 text-accent-primary"></i>
+            </div>
+            <span class="bento-tag font-mono">Laptop Friendly</span>
+            <h3 class="bento-title">Work & Flow</h3>
+            <p class="bento-desc">
+              Cozy natural wood corners, high-speed fiber Wi-Fi, abundant power outlets at every booth, and curated lo-fi Ethio-jazz playlists that keep distractions at bay.
+            </p>
+            <div class="amenity-badges font-mono">
+              <span class="amenity-pill"><i data-lucide="wifi" class="w-3.5 h-3.5"></i> Fiber Wi-Fi</span>
+              <span class="amenity-pill"><i data-lucide="zap" class="w-3.5 h-3.5"></i> Outlets Everywhere</span>
+              <span class="amenity-pill"><i data-lucide="headphones" class="w-3.5 h-3.5"></i> Lo-Fi Ambience</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 3: Afternoon Chillax -->
+        <div class="bento-card bento-social tilt-card">
+          <div class="card-bg-visual" style="background-image: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?auto=format&fit=crop&w=800&q=80');"></div>
+          <div class="card-gradient"></div>
+          <div class="bento-content">
+            <span class="bento-tag font-mono">Social Lounge</span>
+            <h3 class="bento-title">Afternoon Chillax</h3>
+            <p class="bento-desc">
+              Freshly blended multi-layered Spris juices, chilled hibiscus coolers, honey fetira, and vibrant conversation in our breezy Mekanisa courtyard.
+            </p>
+            <div class="bento-quote">
+              <span class="font-serif italic">"Best spris and relaxed lounge vibe in South Addis."</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 4: 100% Highland Arabica -->
+        <div class="bento-card bento-roast tilt-card">
+          <div class="bento-content">
+            <div class="bento-icon-box">
+              <i data-lucide="sparkles" class="w-6 h-6 text-highlight"></i>
+            </div>
+            <span class="bento-tag font-mono">House Roast</span>
+            <h3 class="bento-title">100% Highland Arabica</h3>
+            <p class="bento-desc">
+              Directly sourced from Yirgacheffe, Guji, and Jimma cooperatives. Small-batch drum roasted weekly right here in Addis Ababa for that unmistakable floral aroma and deep crema.
+            </p>
+            <div class="origin-pills font-mono">
+              <span class="origin-badge">Yirgacheffe</span>
+              <span class="origin-badge">Guji Zone</span>
+              <span class="origin-badge">Jimma Kaffa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEAN-TO-CUP STORYTELLING TIMELINE (Horizontal/Interactive Journey) -->
+  <section class="section-padding origin-section" id="origin">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-eyebrow font-mono">THE HIGHLAND PEDIGREE</span>
+        <h2 class="section-headline">From Ethiopia’s Cloud Forests to Mekanisa</h2>
+        <p class="section-subheadline">
+          Ethiopia is the birthplace of Arabica coffee. We honor that heritage in every cup through rigorous single-origin sourcing and mindful roasting.
+        </p>
+      </div>
+
+      <div class="journey-timeline">
+        <!-- Step 1 -->
+        <div class="journey-step">
+          <div class="step-num font-mono">01</div>
+          <div class="step-icon">
+            <i data-lucide="sprout" class="w-6 h-6"></i>
+          </div>
+          <h4 class="step-title">Highland Harvest</h4>
+          <span class="step-meta font-mono">2,100m • Guji & Yirgacheffe</span>
+          <p class="step-text">
+            Handpicked ripe crimson cherries grown in rich volcanic soils under native shade canopy.
+          </p>
+        </div>
+
+        <!-- Connector Line -->
+        <div class="step-connector" aria-hidden="true"></div>
+
+        <!-- Step 2 -->
+        <div class="journey-step">
+          <div class="step-num font-mono">02</div>
+          <div class="step-icon">
+            <i data-lucide="sun" class="w-6 h-6"></i>
+          </div>
+          <h4 class="step-title">Raised Bed Drying</h4>
+          <span class="step-meta font-mono">18 Days • Sun Cured</span>
+          <p class="step-text">
+            Natural fermentation on African raised beds, intensifying natural berry sweetness and floral acidity.
+          </p>
+        </div>
+
+        <!-- Connector Line -->
+        <div class="step-connector" aria-hidden="true"></div>
+
+        <!-- Step 3 -->
+        <div class="journey-step">
+          <div class="step-num font-mono">03</div>
+          <div class="step-icon">
+            <i data-lucide="flame" class="w-6 h-6"></i>
+          </div>
+          <h4 class="step-title">Artisan Drum Roast</h4>
+          <span class="step-meta font-mono">Addis Ababa • Medium-Dark</span>
+          <p class="step-text">
+            Small batches roasted weekly to caramelize sugars without masking the citrus and jasmine notes.
+          </p>
+        </div>
+
+        <!-- Connector Line -->
+        <div class="step-connector" aria-hidden="true"></div>
+
+        <!-- Step 4 -->
+        <div class="journey-step">
+          <div class="step-num font-mono">04</div>
+          <div class="step-icon">
+            <i data-lucide="coffee" class="w-6 h-6"></i>
+          </div>
+          <h4 class="step-title">The Mekanisa Pour</h4>
+          <span class="step-meta font-mono">Ground Fresh • 93°C</span>
+          <p class="step-text">
+            Pulled through calibrated commercial group heads or brewed in clay Jebenas with fresh rue.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 04_INTERACTIVE_MENU: Tabbed Category Filter with Spotlight Cards & Pre-order Basket -->
+  <section class="section-padding menu-section" id="menu">
+    <div class="container">
+      <div class="menu-header-row">
+        <div>
+          <span class="section-eyebrow font-mono">HANDCRAFTED DAILY</span>
+          <h2 class="section-headline">Crafted at the Bar</h2>
+          <p class="section-subheadline text-left">
+            Every cup is dialed in with precision; every snack is baked fresh. Tap any item to inspect tasting notes or add to your pre-order basket.
+          </p>
+        </div>
+        
+        <!-- Quick Cart Trigger button (shows items count) -->
+        <button class="cart-pill-btn" id="open-cart-btn" aria-label="View pre-order basket">
+          <div class="cart-pill-inner">
+            <i data-lucide="shopping-bag" class="w-4 h-4"></i>
+            <span class="cart-pill-label">Pre-Order Tray</span>
+            <span class="cart-count-badge font-mono" id="cart-count-badge">0</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Category Filter Tabs -->
+      <div class="menu-tabs-container">
+        <div class="menu-tabs" role="tablist">
+          <button class="menu-tab active" data-category="espresso" role="tab" aria-selected="true">
+            <i data-lucide="coffee" class="w-4 h-4"></i>
+            <span>Signature Espresso & Buna</span>
+          </button>
+          <button class="menu-tab" data-category="juices" role="tab" aria-selected="false">
+            <i data-lucide="citrus" class="w-4 h-4"></i>
+            <span>Fresh Juices & Smoothies</span>
+          </button>
+          <button class="menu-tab" data-category="bites" role="tab" aria-selected="false">
+            <i data-lucide="croissant" class="w-4 h-4"></i>
+            <span>Bites & Pastries</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Menu Grid Cards (Dynamic / Filterable) -->
+      <div class="menu-items-grid" id="menu-items-grid">
+        <!-- Items will be rendered dynamically with full interactivity, tasting notes, and add-to-cart -->
+      </div>
+
+      <!-- Quick Guarantee / Value Hook Strip -->
+      <div class="menu-guarantee-bar">
+        <div class="guarantee-item">
+          <i data-lucide="shield-check" class="w-5 h-5 text-accent-secondary"></i>
+          <span><strong>100% Ethiopian Beans:</strong> Zero blends with imported fillers.</span>
+        </div>
+        <div class="guarantee-item">
+          <i data-lucide="clock" class="w-5 h-5 text-accent-secondary"></i>
+          <span><strong>Under 5-Min Pickup:</strong> Pre-ordered drinks are hot & ready when you arrive.</span>
+        </div>
+        <div class="guarantee-item">
+          <i data-lucide="sparkles" class="w-5 h-5 text-accent-secondary"></i>
+          <span><strong>Customizable:</strong> Oat milk, honey sweetener, or rue (Tena Adam) upon request.</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ETHIOPIAN BUNA RITUAL SPOTLIGHT (Cultural Heritage & Storytelling) -->
+  <section class="section-padding buna-ritual-section" id="story">
+    <div class="container">
+      <div class="ritual-box">
+        <div class="ritual-content">
+          <span class="ritual-amharic font-ethiopic">የኢትዮጵያ ባህላዊ ቡና</span>
+          <span class="section-eyebrow font-mono">HERITAGE MEETS MODERNITY</span>
+          <h2 class="ritual-title">The Buna Ceremony: Our Spiritual Center</h2>
+          <p class="ritual-text">
+            In Addis Ababa, coffee is never just caffeine—it is kinship, peace, and shared stillness. In the traditional Jebena ceremony, frankincense smoke purifies the air, green beans are roasted over glowing charcoal, and the aromatic brew is poured from high above into clay <em>sini</em> cups.
+          </p>
+          <p class="ritual-text">
+            At Chillax, we honor both worlds: whether you have 3 minutes for a quick double macchiato before an embassy meeting or 45 minutes to share a three-round Jebena ritual with friends, our hearth is always warm.
+          </p>
+          <div class="ritual-cta-row">
+            <button class="btn btn-primary btn-md" onclick="document.getElementById('open-order-modal').click()">
+              <i data-lucide="sparkles" class="w-4 h-4"></i>
+              <span>Reserve a Jebena Pot for Your Table</span>
+            </button>
+            <span class="ritual-quote font-ethiopic">"ኑ ቡና እንጠጣ" — Come, let us drink coffee</span>
+          </div>
+        </div>
+
+        <div class="ritual-image-frame">
+          <img 
+            src="https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=800&q=80" 
+            alt="Traditional Ethiopian Clay Jebena and roasted beans with frankincense smoke" 
+            class="ritual-img"
+          />
+          <div class="ritual-badge font-mono">
+            <span>TRADITIONAL THREE ROUNDS:</span>
+            <strong>Abol • Tona • Baraka</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 06_LOCATION_AND_HOURS: Interactive Map & Storefront Card -->
+  <section class="section-padding location-section" id="location">
+    <div class="container">
+      <div class="section-header text-center">
+        <span class="section-eyebrow font-mono">FIND YOUR SEAT</span>
+        <h2 class="section-headline">Drop By the Lounge</h2>
+        <p class="section-subheadline">
+          Tucked right into the vibrant Mekanisa neighborhood, our sunlit sanctuary is your home away from home.
+        </p>
+      </div>
+
+      <div class="location-layout">
+        <!-- Storefront Details Card -->
+        <div class="storefront-card">
+          <div class="storefront-header">
+            <div>
+              <span class="font-mono text-xs uppercase tracking-widest text-accent-primary">SANCTUARY ADDRESS</span>
+              <h3 class="storefront-title">Mekanisa, Addis Ababa</h3>
+              <p class="storefront-sub">Around Mekanisa Abo area, adjacent to green residential walkways.</p>
+            </div>
+            <div class="storefront-icon-circle">
+              <i data-lucide="map-pin" class="w-6 h-6 text-accent-primary"></i>
+            </div>
+          </div>
+
+          <!-- Hours of Operation with Live Highlighting -->
+          <div class="hours-card">
+            <div class="hours-header">
+              <span class="font-mono font-bold text-sm">HOURS OF OPERATION</span>
+              <span class="live-tag font-mono" id="location-live-tag">OPEN TODAY</span>
+            </div>
+            <ul class="hours-list font-mono text-sm">
+              <li class="hours-row highlight-day">
+                <span>Monday – Friday</span>
+                <span>6:30 AM – 9:30 PM</span>
+              </li>
+              <li class="hours-row">
+                <span>Saturday</span>
+                <span>7:00 AM – 10:00 PM</span>
+              </li>
+              <li class="hours-row">
+                <span>Sunday</span>
+                <span>7:30 AM – 9:00 PM</span>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Amenities Icons Grid -->
+          <div class="amenities-grid">
+            <div class="amenity-item">
+              <div class="amenity-icon"><i data-lucide="trees" class="w-4 h-4"></i></div>
+              <span>Outdoor Patio</span>
+            </div>
+            <div class="amenity-item">
+              <div class="amenity-icon"><i data-lucide="wifi" class="w-4 h-4"></i></div>
+              <span>Free High-Speed Wi-Fi</span>
+            </div>
+            <div class="amenity-item">
+              <div class="amenity-icon"><i data-lucide="package-check" class="w-4 h-4"></i></div>
+              <span>Takeaway & Drive-Up</span>
+            </div>
+            <div class="amenity-item">
+              <div class="amenity-icon"><i data-lucide="car" class="w-4 h-4"></i></div>
+              <span>Parking Available</span>
+            </div>
+          </div>
+
+          <!-- Direct Direction Action Buttons -->
+          <div class="storefront-actions">
+            <a 
+              href="https://maps.google.com/?q=Mekanisa+Addis+Ababa" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="btn btn-primary w-full"
+            >
+              <i data-lucide="map" class="w-4 h-4"></i>
+              <span>Open in Google Maps</span>
+            </a>
+            <button class="btn btn-secondary w-full" id="call-store-btn">
+              <i data-lucide="phone-call" class="w-4 h-4"></i>
+              <span>Call Barista (+251 911 234 567)</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Custom Interactive Styled Map Embed Container -->
+        <div class="map-container">
+          <div class="map-frame">
+            <!-- Embedded Google Map with warm styling coordinates for Mekanisa, Addis Ababa -->
+            <iframe 
+              title="Chillax Coffee Mekanisa Location Map"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15764.129337039014!2d38.71887085449219!3d8.969188099999996!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x164b840003009575%3A0xc3160a2c07469600!2sMekanisa%2C%20Addis%20Ababa!5e0!3m2!1sen!2set!4v1710000000000!5m2!1sen!2set" 
+              class="map-iframe"
+              allowfullscreen="" 
+              loading="lazy" 
+              referrerpolicy="no-referrer-when-downgrade">
+            </iframe>
+            
+            <!-- Map Overlay Card -->
+            <div class="map-pin-overlay">
+              <div class="pulse-marker">
+                <i data-lucide="coffee" class="w-4 h-4 text-white"></i>
+              </div>
+              <div class="marker-text">
+                <strong>Chillax Coffee</strong>
+                <span>Mekanisa Lounge</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 07_FOOTER: Oversized Kinetic Typography Footer -->
+  <footer class="footer-section">
+    <div class="container">
+      <!-- Huge Kinetic Brand Text -->
+      <div class="footer-huge-typography" aria-hidden="true">
+        <span>CHILLAX</span>
+      </div>
+
+      <div class="footer-grid">
+        <!-- Column 1: Brand & Amharic Motto -->
+        <div class="footer-col brand-col">
+          <div class="brand-logo footer-logo" style="flex-direction: column; align-items: flex-start; gap: 0.75rem;">
+            <div style="height: 80px; width: 200px;">
+              <img src="logo.png" alt="Chillax Botanical Sofa Logo" style="width: 100%; height: 100%; object-fit: contain; object-position: left;">
+            </div>
+            <span class="font-serif font-bold text-2xl tracking-tight text-primary">Chillax Coffee</span>
+          </div>
+          <p class="footer-bio">
+            Specialty coffee house & neighborhood lounge in Mekanisa, Addis Ababa. Celebrating 100% single-origin highland beans, velvety macchiatos, and good neighborhood conversations.
+          </p>
+          <div class="bilingual-badge font-ethiopic">
+            <span class="amharic-phrase">"ኑ ቡና እንጠጣ"</span>
+            <span class="font-sans text-xs opacity-75">— Come, let us drink coffee</span>
+          </div>
+        </div>
+
+        <!-- Column 2: Navigation Links -->
+        <div class="footer-col">
+          <h4 class="footer-heading font-mono">EXPLORE</h4>
+          <ul class="footer-links">
+            <li><a href="#vibe">Our Atmosphere</a></li>
+            <li><a href="#menu">Bar & Kitchen Menu</a></li>
+            <li><a href="#origin">Highland Origin Story</a></li>
+            <li><a href="#story">The Buna Ritual</a></li>
+            <li><a href="#location">Find Mekanisa Lounge</a></li>
+          </ul>
+        </div>
+
+        <!-- Column 3: Hours & Contact -->
+        <div class="footer-col">
+          <h4 class="footer-heading font-mono">CONTACT & HOURS</h4>
+          <p class="footer-info-line">
+            <span><strong>Address:</strong> Mekanisa, Addis Ababa, Ethiopia</span>
+          </p>
+          <p class="footer-info-line">
+            <span><strong>Hours:</strong> Daily 6:30 AM – 9:30 PM</span>
+          </p>
+          <p class="footer-info-line">
+            <span><strong>Phone Desk:</strong> +251 911 234 567</span>
+          </p>
+        </div>
+
+        <!-- Column 4: Quick Order Desk & Channels -->
+        <div class="footer-col">
+          <h4 class="footer-heading font-mono">ORDER & COMMUNITY</h4>
+          <p class="text-sm text-secondary mb-4">
+            Order directly via your preferred messenger or follow our weekly roast releases:
+          </p>
+          <div class="social-channels">
+            <a href="https://t.me" target="_blank" rel="noopener noreferrer" class="channel-pill telegram">
+              <span>Telegram Channel</span>
+            </a>
+            <a href="https://whatsapp.com" target="_blank" rel="noopener noreferrer" class="channel-pill whatsapp">
+              <span>WhatsApp Order Desk</span>
+            </a>
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" class="channel-pill instagram">
+              <span>Instagram @ChillaxCoffeeAddis</span>
+            </a>
+            <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" class="channel-pill tiktok">
+              <span>TikTok Vibe Clips</span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom">
+        <p class="copyright font-mono text-xs">
+          © <span id="current-year">2026</span> Chillax Coffee PLC. All rights reserved. Mekanisa, Addis Ababa.
+        </p>
+        <div class="footer-bottom-links font-mono text-xs">
+          <span>Roasted with love in Ethiopia</span>
+          <span>•</span>
+          <a href="#hero">Back to Top ↑</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- STICKY MOBILE CONVERSION BAR (Mobile-optimized CTA) -->
+  <div class="mobile-sticky-bar" aria-label="Mobile quick actions">
+    <a href="#menu" class="mobile-sticky-btn secondary">
+      <span>Menu</span>
+    </a>
+    <a href="https://maps.google.com/?q=Mekanisa+Addis+Ababa" target="_blank" rel="noopener noreferrer" class="mobile-sticky-btn secondary">
+      <span>Directions</span>
+    </a>
+    <button class="mobile-sticky-btn primary" id="open-preorder-mobile-btn">
+      <span>Order Ahead</span>
+    </button>
+  </div>
+    <a href="https://maps.google.com/?q=Mekanisa+Addis+Ababa" target="_blank" rel="noopener noreferrer" class="mobile-sticky-btn secondary">
+      <i data-lucide="navigation" class="w-4 h-4"></i>
+      <span>Directions</span>
+    </a>
+    <button class="mobile-sticky-btn primary" id="mobile-sticky-order">
+      <i data-lucide="coffee" class="w-4 h-4"></i>
+      <span>Order Ahead</span>
+      <span class="mobile-badge" id="mobile-tray-count">0</span>
+    </button>
+  </div>
+
+  <!-- QUICK PRE-ORDER & BASKET MODAL (Telegram & WhatsApp One-Click Dispatch) -->
+  <div class="modal-backdrop" id="order-modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div>
+          <span class="font-mono text-xs text-accent-primary uppercase tracking-wider">MEKANISA BARISTA DESK</span>
+          <h3 class="modal-title">Pre-Order for Quick Pickup</h3>
+        </div>
+        <button class="modal-close-btn" id="close-modal-btn" aria-label="Close modal">
+          <i data-lucide="x" class="w-5 h-5"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <!-- Selected Items Tray -->
+        <div class="order-items-container">
+          <h4 class="font-mono text-xs text-secondary mb-2 uppercase">Your Selected Items</h4>
+          <div class="order-items-list" id="modal-items-list">
+            <!-- Dynamically populated or empty state -->
+          </div>
+        </div>
+
+        <!-- Add Items Shortcut -->
+        <div class="quick-add-section">
+          <span class="font-mono text-xs text-secondary">Quick Add Favorites:</span>
+          <div class="quick-add-pills" id="quick-add-pills">
+            <!-- Quick items dynamically loaded -->
+          </div>
+        </div>
+
+        <!-- Order Options Form -->
+        <form id="preorder-form" class="order-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="customer-name" class="font-mono text-xs">Your Name *</label>
+              <input type="text" id="customer-name" placeholder="e.g. Almaz or Robel" required class="form-input">
+            </div>
+            <div class="form-group">
+              <label for="pickup-time" class="font-mono text-xs">Pickup Time</label>
+              <select id="pickup-time" class="form-input">
+                <option value="In 10 Minutes">In 10 Minutes</option>
+                <option value="In 20 Minutes">In 20 Minutes</option>
+                <option value="In 30 Minutes">In 30 Minutes</option>
+                <option value="Today at 1:00 PM">Today at 1:00 PM</option>
+                <option value="Dine-in / Save Table">Dine-in / Save Table</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="order-notes" class="font-mono text-xs">Barista Notes (Sweetness, Extra Shot, Milk)</label>
+            <input type="text" id="order-notes" placeholder="e.g. Extra hot, little sugar, add Tena Adam rue" class="form-input">
+          </div>
+
+          <!-- Total Calculation -->
+          <div class="order-total-row font-mono">
+            <span>Estimated Total:</span>
+            <span class="total-amount" id="modal-total-amount">0 ETB</span>
+          </div>
+
+          <!-- Choose Dispatch Channel -->
+          <div class="dispatch-channels-row">
+            <button type="button" class="channel-btn telegram-btn" id="send-telegram-btn">
+              <i data-lucide="send" class="w-4 h-4"></i>
+              <span>Send via Telegram</span>
+            </button>
+            <button type="button" class="channel-btn whatsapp-btn" id="send-whatsapp-btn">
+              <i data-lucide="message-circle" class="w-4 h-4"></i>
+              <span>Send via WhatsApp</span>
+            </button>
+          </div>
+          <p class="dispatch-note font-mono text-xs text-center">
+            Instant dispatch directly to the Mekanisa bar station. Pay upon pickup via Telebirr, CBE Birr, or Cash.
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ITEM DETAIL & TASTING NOTES TOAST / MODAL -->
+  <div class="toast-notification" id="toast-notify" aria-live="polite">
+    <div class="toast-content">
+      <i data-lucide="check-circle" class="w-4 h-4 text-accent-secondary"></i>
+      <span id="toast-message">Item added to your pre-order tray!</span>
+    </div>
+  </div>
+
+  <!-- Audio Element for Ambient Cafe Soundscape (Simulated Warm Ethio-Jazz Lounge Ambiance) -->
+  <audio id="cafe-ambiance-audio" loop preload="none">
+    <!-- Clean royalty-free warm cafe background murmur -->
+    <source src="https://cdn.pixabay.com/download/audio/2022/05/16/audio_c89694e1d5.mp3?filename=coffee-shop-ambience-112349.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Application Script -->
+  <script src="app.js"></script>
+</body>
+</html>
