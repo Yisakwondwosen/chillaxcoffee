@@ -2,6 +2,8 @@ import json
 import logging
 import os
 import re
+import subprocess
+import threading
 import urllib.parse
 import urllib.request
 from decimal import Decimal
@@ -229,7 +231,8 @@ def handle_callback_query(callback_query):
             item.save(update_fields=['is_available'])
             state_text = "In Stock 🟢" if item.is_available else "Sold Out ⏸"
             answer_callback_query(callback_id, text=f"{item.name} is now {state_text}")
-            edit_message_text(chat_id, message_id, f"✅ <b>{item.name}</b> is now <b>{state_text}</b> on the website.")
+            edit_message_text(chat_id, message_id, f"✅ <b>{item.name}</b> is now <b>{state_text}</b> on the website.\n🚀 <i>Deploying live to chillaxcoffee.vercel.app (~45s)...</i>")
+            trigger_git_sync(f"toggle {item.name} availability", chat_id=chat_id)
             return
         except MenuItem.DoesNotExist:
             answer_callback_query(callback_id, text="Item not found.")
@@ -243,13 +246,79 @@ def handle_callback_query(callback_query):
             deleted_name = item.name
             item.delete()
             answer_callback_query(callback_id, text=f"Deleted {deleted_name} from website!")
-            edit_message_text(chat_id, message_id, f"🗑 <b>{deleted_name}</b> was successfully removed from the website catalog.")
+            edit_message_text(chat_id, message_id, f"🗑 <b>{deleted_name}</b> was successfully removed from the website catalog.\n🚀 <i>Deploying live to chillaxcoffee.vercel.app (~45s)...</i>")
+            trigger_git_sync(f"delete {deleted_name}", chat_id=chat_id)
             return
         except MenuItem.DoesNotExist:
             answer_callback_query(callback_id, text="Item not found or already deleted.")
             return
 
     answer_callback_query(callback_id)
+
+
+def _run_git_sync(action_description, chat_id=None):
+    """Executes git commit and push in background to trigger Vercel auto-deploy"""
+    try:
+        repo_dir = settings.BASE_DIR.parent
+        subprocess.run(
+            ["git", "add", "backend/db.sqlite3", "frontend/public/uploads/"],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+        status_res = subprocess.run(
+            ["git", "status", "--porcelain", "backend/db.sqlite3", "frontend/public/uploads/"],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+
+        if not status_res.stdout.strip():
+            logger.info("Git sync: No changes to commit.")
+            return
+
+        commit_res = subprocess.run(
+            ["git", "commit", "-m", f"bot: {action_description}"],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True,
+            timeout=30,
+        )
+
+        push_res = subprocess.run(
+            ["git", "push", "origin", "main"],
+            cwd=str(repo_dir),
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+
+        if push_res.returncode == 0:
+            logger.info(f"Git sync successful for {action_description}")
+            if chat_id:
+                msg = (
+                    f"🚀 <b>Live Website Deployed!</b>\n"
+                    f"━━━━━━━━━━━━━━━━━━━━\n"
+                    f"✅ <b>Change:</b> {action_description}\n"
+                    f"🌐 Pushed to GitHub. Vercel deployment is now live:\n"
+                    f"👉 <a href=\"https://chillaxcoffee.vercel.app\">chillaxcoffee.vercel.app</a>"
+                )
+                send_message(chat_id, msg)
+        else:
+            logger.error(f"Git push failed: {push_res.stderr}")
+            if chat_id:
+                send_message(chat_id, f"⚠️ Local update saved, but GitHub push failed:\n<code>{push_res.stderr[:200]}</code>")
+    except Exception as e:
+        logger.error(f"Error in _run_git_sync: {e}")
+
+
+def trigger_git_sync(action_description, chat_id=None):
+    """Triggers background git commit and push so Vercel auto-deploys within ~45s"""
+    t = threading.Thread(target=_run_git_sync, args=(action_description, chat_id), daemon=True)
+    t.start()
 
 
 def save_staff_chat_id(chat_id):
@@ -487,9 +556,10 @@ def handle_message(message):
             f"📸 <b>Photo:</b> {photo_status}\n"
             f"📝 <b>Description:</b> {new_item.description}\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"✅ It is now <b>LIVE</b> on the website catalog with your photo!"
+            f"🚀 <i>Deploying live to chillaxcoffee.vercel.app (~45s)... You will receive a confirmation when deployed!</i>"
         )
         send_message(chat_id, response_text)
+        trigger_git_sync(f"add item '{new_item.name}'", chat_id=chat_id)
         return
 
     # Command: /delete or /remove
@@ -516,7 +586,8 @@ def handle_message(message):
 
         deleted_name = item.name
         item.delete()
-        send_message(chat_id, f"🗑 <b>{deleted_name}</b> was successfully removed from the website catalog!")
+        send_message(chat_id, f"🗑 <b>{deleted_name}</b> was removed from the website catalog!\n🚀 <i>Deploying live to chillaxcoffee.vercel.app (~45s)...</i>")
+        trigger_git_sync(f"delete item '{deleted_name}'", chat_id=chat_id)
         return
 
     # Command: /toggle
@@ -545,7 +616,8 @@ def handle_message(message):
         item.is_available = not item.is_available
         item.save(update_fields=['is_available'])
         state_icon = "In Stock 🟢" if item.is_available else "Sold Out ⏸"
-        send_message(chat_id, f"✅ <b>{item.name}</b> is now <b>{state_icon}</b> on the website.")
+        send_message(chat_id, f"✅ <b>{item.name}</b> is now <b>{state_icon}</b> on the website.\n🚀 <i>Deploying live to chillaxcoffee.vercel.app (~45s)...</i>")
+        trigger_git_sync(f"toggle {item.name} availability", chat_id=chat_id)
         return
 
 
