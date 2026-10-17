@@ -151,3 +151,18 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:8000',
 ]
 
+# Serverless-Safe Session Engine using Cryptographically Signed Cookies
+# Ensures staff stay logged in across all ephemeral serverless instances
+SESSION_ENGINE = 'django.contrib.sessions.backends.signed_cookies'
+SESSION_COOKIE_NAME = 'chillax_admin_session'
+SESSION_COOKIE_AGE = 1209600  # 14 days
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SAMESITE = 'Lax'
+SESSION_SAVE_EVERY_REQUEST = True
+
+CSRF_COOKIE_NAME = 'chillax_admin_csrftoken'
+CSRF_COOKIE_HTTPONLY = False
+CSRF_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SAMESITE = 'Lax'
+

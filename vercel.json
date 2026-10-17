@@ -43,7 +43,6 @@
       "dest": "frontend/$1"
     }
   ],
-  "trailingSlash": false,
   "env": {
     "DJANGO_SETTINGS_MODULE": "chillax_backend.settings",
     "PYTHONPATH": "backend",
