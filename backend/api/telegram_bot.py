@@ -207,20 +207,37 @@ def handle_callback_query(callback_query):
         parts = data.split(":")
         if len(parts) == 3:
             _, order_number, new_status = parts
+            order = None
             try:
                 order = PreOrder.objects.get(order_number=order_number)
                 order.status = new_status
                 order.save(update_fields=['status'])
+            except Exception:
+                order = None
 
-                answer_callback_query(callback_id, text=f"Order #{order_number} updated to {new_status}!", show_alert=False)
+            answer_callback_query(callback_id, text=f"Order #{order_number} updated to {new_status}!", show_alert=False)
 
+            if order:
                 updated_text = format_order_text(order, updated_by=from_user)
-                updated_keyboard = get_order_inline_keyboard(order_number, new_status)
-                edit_message_text(chat_id, message_id, updated_text, reply_markup=updated_keyboard)
-                return
-            except PreOrder.DoesNotExist:
-                answer_callback_query(callback_id, text="Order not found.", show_alert=True)
-                return
+            else:
+                existing_text = message.get("text", "")
+                status_icons = {
+                    'PENDING': '⏳ PENDING',
+                    'BREWING': '☕ PREPARING',
+                    'READY': '✅ READY FOR PICKUP',
+                    'DELIVERY': '🛵 OUT FOR DELIVERY',
+                    'COMPLETED': '🏁 COMPLETED',
+                    'CANCELLED': '❌ CANCELLED',
+                }
+                status_label = status_icons.get(new_status, new_status)
+                lines = [l for l in existing_text.split('\n') if not l.startswith('Status:') and not l.startswith('👤 Handled by:')]
+                lines.append(f"Status: <b>{status_label}</b>")
+                lines.append(f"👤 <i>Handled by:</i> @{from_user}")
+                updated_text = "\n".join(lines)
+
+            updated_keyboard = get_order_inline_keyboard(order_number, new_status)
+            edit_message_text(chat_id, message_id, updated_text, reply_markup=updated_keyboard)
+            return
 
     # Toggle menu item: toggle:<item_id>
     if data.startswith("toggle:"):
