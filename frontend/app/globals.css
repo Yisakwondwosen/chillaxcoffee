@@ -2,6 +2,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Vipnagorgialla';
+  src: url('/fonts/Vipnagorgialla-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Vipnagorgialla';
+  src: url('/fonts/Vipnagorgialla-Regular.otf') format('opentype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
     --color-cobalt-signal: #002fff;
@@ -211,4 +227,45 @@
     bottom: 0;
     z-index: 50;
   }
+}
+
+/* Custom 8-Point Radial Stepped Loader */
+.loader {
+  --d: 22px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  color: #25b09b;
+  box-shadow: 
+    calc(1*var(--d))      calc(0*var(--d))     0 0,
+    calc(0.707*var(--d))  calc(0.707*var(--d)) 0 1px,
+    calc(0*var(--d))      calc(1*var(--d))     0 2px,
+    calc(-0.707*var(--d)) calc(0.707*var(--d)) 0 3px,
+    calc(-1*var(--d))     calc(0*var(--d))     0 4px,
+    calc(-0.707*var(--d)) calc(-0.707*var(--d)) 0 5px,
+    calc(0*var(--d))      calc(-1*var(--d))    0 6px;
+  animation: l27 1s infinite steps(8);
+  display: inline-block;
+}
+
+.loader-sm {
+  --d: 11px;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  color: #25b09b;
+  box-shadow: 
+    calc(1*var(--d))      calc(0*var(--d))     0 0,
+    calc(0.707*var(--d))  calc(0.707*var(--d)) 0 1px,
+    calc(0*var(--d))      calc(1*var(--d))     0 1.5px,
+    calc(-0.707*var(--d)) calc(0.707*var(--d)) 0 2px,
+    calc(-1*var(--d))     calc(0*var(--d))     0 2.5px,
+    calc(-0.707*var(--d)) calc(-0.707*var(--d)) 0 3px,
+    calc(0*var(--d))      calc(-1*var(--d))    0 3.5px;
+  animation: l27 1s infinite steps(8);
+  display: inline-block;
+}
+
+@keyframes l27 {
+  100% { transform: rotate(1turn); }
 }

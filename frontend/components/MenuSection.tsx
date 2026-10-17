@@ -107,7 +107,13 @@ export default function MenuSection({
           {/* Left Column: Stack of Product Detail Cards (8 cols) */}
           <div className="lg:col-span-8 flex flex-col gap-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {filteredItems.map((item) => {
+              {filteredItems.length === 0 ? (
+                <div className="col-span-full py-16 flex flex-col items-center justify-center gap-4 bg-fog/20 rounded-cards border border-dashed border-dove/40">
+                  <div className="loader my-2" />
+                  <p className="font-sans text-[13px] text-iron">Loading coffee menu from Bisrate Gabriel...</p>
+                </div>
+              ) : (
+                filteredItems.map((item) => {
                 const currentSize = selectedSizes[item.item_id] || 'Grande';
 
                 return (
@@ -197,7 +203,7 @@ export default function MenuSection({
                     </CardFooter>
                   </Card>
                 );
-              })}
+              }))}
             </div>
 
             {/* Testimonial Mini Card */}

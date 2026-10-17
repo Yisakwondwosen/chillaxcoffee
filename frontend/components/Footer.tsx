@@ -29,7 +29,7 @@ export default function Footer() {
                   className="object-contain object-left"
                 />
               </div>
-              <span className="font-retro text-[24px] sm:text-[28px] font-normal tracking-tight text-graphite lowercase">
+              <span className="font-vipnagorgialla text-[24px] sm:text-[28px] font-bold tracking-tight text-graphite lowercase">
                 chillax coffee
               </span>
             </div>

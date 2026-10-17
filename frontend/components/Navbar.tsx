@@ -49,7 +49,7 @@ export default function Navbar({ status, onOpenOrderModal, cartCount }: NavbarPr
                   priority
                 />
               </div>
-              <span className="font-retro text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] font-normal tracking-[-0.03em] text-graphite lowercase select-none whitespace-nowrap">
+              <span className="font-vipnagorgialla text-[17px] xs:text-[19px] sm:text-[22px] md:text-[24px] font-bold tracking-tight text-graphite lowercase select-none whitespace-nowrap">
                 chillax coffee
               </span>
             </a>

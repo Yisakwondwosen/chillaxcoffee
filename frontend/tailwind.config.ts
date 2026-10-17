@@ -22,6 +22,7 @@ const config: Config = {
         'cobalt-mist': '#00368c',
       },
       fontFamily: {
+        vipnagorgialla: ['Vipnagorgialla', 'sans-serif'],
         retro: ['Fraunces', 'Recife', 'Ogg', '"Cooper Black"', 'serif'],
         serif: ['"EB Garamond"', '"Cormorant Garamond"', 'Fraunces', 'Georgia', 'serif'],
         sans: ['Inter', '"Graphik Medium"', 'system-ui', '-apple-system', 'sans-serif'],

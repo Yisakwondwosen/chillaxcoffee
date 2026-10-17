@@ -520,9 +520,16 @@ export default function PreOrderModal({
             <button
               type="submit"
               disabled={loading || tray.length === 0}
-              className="btn-cobalt w-full py-3.5 rounded-buttons text-[14px] font-medium disabled:opacity-50 cursor-pointer shadow-sm hover:shadow text-center"
+              className="btn-cobalt w-full py-3.5 rounded-buttons text-[14px] font-medium disabled:opacity-50 cursor-pointer shadow-sm hover:shadow text-center flex items-center justify-center gap-2"
             >
-              {loading ? 'Submitting Order...' : `Confirm & Place Order (${totalAmount} ETB)`}
+              {loading ? (
+                <>
+                  <div className="loader-sm" />
+                  <span>Submitting Order...</span>
+                </>
+              ) : (
+                `Confirm & Place Order (${totalAmount} ETB)`
+              )}
             </button>
 
             <p className="text-[11px] text-center text-iron">
