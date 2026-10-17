@@ -155,6 +155,18 @@ export default function MenuSection({
                           alt={item.name}
                           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                           loading="lazy"
+                          onError={(e) => {
+                            const target = e.currentTarget;
+                            if (item.image_url?.startsWith('/uploads/')) {
+                              const filename = item.image_url.replace('/uploads/', '');
+                              const rawUrl = `https://raw.githubusercontent.com/Yisakwondwosen/chillaxcoffee/main/frontend/public/uploads/${filename}`;
+                              if (target.src !== rawUrl) {
+                                target.src = rawUrl;
+                                return;
+                              }
+                            }
+                            target.src = '/Assets/chillax-inside.webp';
+                          }}
                         />
                       </div>
                       <div className="absolute top-4 right-4 z-20">

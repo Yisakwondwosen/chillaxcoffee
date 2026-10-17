@@ -8,6 +8,7 @@ import threading
 import urllib.parse
 import urllib.request
 from decimal import Decimal
+from pathlib import Path
 from django.conf import settings
 from django.utils import timezone
 from .models import Category, MenuItem, PreOrder
@@ -83,7 +84,7 @@ def answer_callback_query(callback_query_id, text=None, show_alert=False):
 
 
 def download_telegram_photo(file_id, save_name_hint="item"):
-    """Downloads a photo sent to Telegram Bot and stores it in frontend/public/uploads/"""
+    """Downloads a photo sent to Telegram Bot, writes to /tmp, and commits directly to GitHub via REST API"""
     token = get_bot_token()
     if not token:
         logger.warning("No Telegram Bot token configured; cannot download photo.")
@@ -104,16 +105,72 @@ def download_telegram_photo(file_id, save_name_hint="item"):
         unique_suffix = timezone.now().strftime("%Y%m%d_%H%M%S")
         filename = f"{clean_hint}_{unique_suffix}{ext}"
 
-        upload_dir = settings.BASE_DIR.parent / "frontend" / "public" / "uploads"
-        upload_dir.mkdir(parents=True, exist_ok=True)
-        dest_path = upload_dir / filename
-
         download_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
         req = urllib.request.Request(download_url)
-        with urllib.request.urlopen(req, timeout=30) as resp, open(dest_path, "wb") as f:
-            f.write(resp.read())
+        with urllib.request.urlopen(req, timeout=30) as resp:
+            photo_bytes = resp.read()
 
-        logger.info(f"Successfully downloaded menu photo to {dest_path}")
+        # 1. Save to /tmp/uploads (always writable on Vercel and Linux)
+        try:
+            tmp_dir = Path("/tmp") / "uploads"
+            tmp_dir.mkdir(parents=True, exist_ok=True)
+            with open(tmp_dir / filename, "wb") as f:
+                f.write(photo_bytes)
+        except Exception as te:
+            logger.warning(f"Could not save to /tmp/uploads: {te}")
+
+        # 2. Save to workspace if writable (local dev environment)
+        try:
+            upload_dir = settings.BASE_DIR.parent / "frontend" / "public" / "uploads"
+            upload_dir.mkdir(parents=True, exist_ok=True)
+            with open(upload_dir / filename, "wb") as f:
+                f.write(photo_bytes)
+        except Exception:
+            pass
+
+        # 3. DIRECTLY COMMIT PHOTO TO GITHUB REPOSITORY via REST API
+        github_token = get_github_token()
+        github_repo = get_github_repo()
+        if github_token and github_repo:
+            try:
+                p_b64 = base64.b64encode(photo_bytes).decode('utf-8')
+                p_path = f"frontend/public/uploads/{filename}"
+                p_url = f"https://api.github.com/repos/{github_repo}/contents/{p_path}"
+                headers = {
+                    'Authorization': f'Bearer {github_token}',
+                    'Accept': 'application/vnd.github.v3+json',
+                    'Content-Type': 'application/json',
+                    'User-Agent': 'Chillax-Bot'
+                }
+                p_sha = None
+                try:
+                    p_req = urllib.request.Request(p_url, headers=headers)
+                    with urllib.request.urlopen(p_req, timeout=10) as presp:
+                        p_info = json.loads(presp.read().decode('utf-8'))
+                        p_sha = p_info.get('sha')
+                except Exception:
+                    p_sha = None
+
+                p_payload = {
+                    'message': f'bot: upload photo {filename}',
+                    'content': p_b64,
+                    'branch': 'main'
+                }
+                if p_sha:
+                    p_payload['sha'] = p_sha
+
+                put_req = urllib.request.Request(
+                    p_url,
+                    data=json.dumps(p_payload).encode('utf-8'),
+                    headers=headers,
+                    method='PUT'
+                )
+                with urllib.request.urlopen(put_req, timeout=30) as pput:
+                    logger.info(f"Photo directly committed to GitHub: {p_path}")
+            except Exception as ge:
+                logger.error(f"Error uploading photo directly to GitHub: {ge}")
+
+        logger.info(f"Successfully processed photo: /uploads/{filename}")
         return f"/uploads/{filename}"
     except Exception as e:
         logger.error(f"Error downloading photo from Telegram: {e}")
@@ -305,6 +362,8 @@ def _run_github_api_sync(action_description, chat_id=None, uploaded_photo_url=No
             photo_dest = settings.BASE_DIR.parent / "frontend" / "public" / "uploads" / filename
             if not photo_dest.exists():
                 photo_dest = settings.BASE_DIR / "uploads" / filename
+            if not photo_dest.exists():
+                photo_dest = Path("/tmp") / "uploads" / filename
             if photo_dest.exists():
                 try:
                     with open(photo_dest, 'rb') as pf:
@@ -668,19 +727,24 @@ def handle_message(message):
         name = parts[0]
         price_str = re.sub(r'[^0-9.]', '', parts[1])
         cat_slug = parts[2].lower()
-        desc = parts[3] if len(parts) > 3 else f"Freshly prepared {name} at Chillax Coffee."
-
         # Check if photo was attached in the message
         img_url = None
         if photos:
             highest_res_photo = photos[-1]
             img_url = download_telegram_photo(highest_res_photo.get("file_id"), save_name_hint=name)
 
+        # Check if an image URL was passed in text parts
         if not img_url:
-            if len(parts) > 4 and parts[4].strip():
-                img_url = parts[4].strip()
-            else:
-                img_url = "/Assets/chillax-inside.webp"
+            for p in parts[3:]:
+                if p.startswith(('http://', 'https://', '/Assets/', '/uploads/')):
+                    img_url = p
+                    break
+
+        desc_parts = [p for p in parts[3:] if p != img_url]
+        desc = desc_parts[0] if desc_parts else f"Freshly prepared {name} at Chillax Coffee."
+
+        if not img_url:
+            img_url = "/Assets/chillax-inside.webp"
 
         try:
             price = Decimal(price_str)
