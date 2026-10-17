@@ -31,20 +31,6 @@
   ],
   "menu": [
     {
-      "id": 4,
-      "item_id": "guji-pourover",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "Single-Origin Guji Pour-Over",
-      "price_etb": "140.00",
-      "badge": "Single Origin",
-      "description": "Artisanal V60 extraction from sun-dried Guji Grade 1 heirloom beans with floral sweetness.",
-      "tasting_notes": "Ripe Peach • Blueberry • Jasmine Blossom",
-      "image_url": "https://images.unsplash.com/photo-1498804103079-a6351b050096?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": false
-    },
-    {
       "id": 2,
       "item_id": "jebena-brew",
       "category_slug": "espresso",
