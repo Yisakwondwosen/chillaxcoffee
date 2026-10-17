@@ -31,34 +31,6 @@
   ],
   "menu": [
     {
-      "id": 2,
-      "item_id": "jebena-brew",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "Spiced Jebena Brew",
-      "price_etb": "95.00",
-      "badge": "Heritage",
-      "description": "Traditional clay-pot slow-brewed coffee infused with a fresh twig of rue (Tena Adam) or cracked green cardamom.",
-      "tasting_notes": "Wild Rue • Bergamot • Frankincense Smoke",
-      "image_url": "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": true
-    },
-    {
-      "id": 1,
-      "item_id": "macchiato",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "The Chillax Double Macchiato",
-      "price_etb": "120.00",
-      "badge": "Bisrate Gabriel Favorite",
-      "description": "Velvety micro-foam stained with a bold double shot of our house highland dark roast.",
-      "tasting_notes": "Dark Chocolate • Honey Crema • Hazelnut",
-      "image_url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": true
-    },
-    {
       "id": 3,
       "item_id": "honey-latte",
       "category_slug": "espresso",
@@ -99,6 +71,34 @@
       "image_url": "/Assets/chillax-inside.webp",
       "is_available": true,
       "is_featured": false
+    },
+    {
+      "id": 2,
+      "item_id": "jebena-brew",
+      "category_slug": "espresso",
+      "category_name": "Coffee & Espresso",
+      "name": "Spiced Jebena Brew",
+      "price_etb": "95.00",
+      "badge": "Heritage",
+      "description": "Traditional clay-pot slow-brewed coffee infused with a fresh twig of rue (Tena Adam) or cracked green cardamom.",
+      "tasting_notes": "Wild Rue • Bergamot • Frankincense Smoke",
+      "image_url": "https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=700&q=80",
+      "is_available": true,
+      "is_featured": true
+    },
+    {
+      "id": 1,
+      "item_id": "macchiato",
+      "category_slug": "espresso",
+      "category_name": "Coffee & Espresso",
+      "name": "The Chillax Double Macchiato",
+      "price_etb": "120.00",
+      "badge": "Bisrate Gabriel Favorite",
+      "description": "Velvety micro-foam stained with a bold double shot of our house highland dark roast.",
+      "tasting_notes": "Dark Chocolate • Honey Crema • Hazelnut",
+      "image_url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=700&q=80",
+      "is_available": true,
+      "is_featured": true
     },
     {
       "id": 5,
