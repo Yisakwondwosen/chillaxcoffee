@@ -45,20 +45,6 @@
       "is_featured": true
     },
     {
-      "id": 1,
-      "item_id": "macchiato",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "The Chillax Double Macchiato",
-      "price_etb": "120.00",
-      "badge": "Bisrate Gabriel Favorite",
-      "description": "Velvety micro-foam stained with a bold double shot of our house highland dark roast.",
-      "tasting_notes": "Dark Chocolate • Honey Crema • Hazelnut",
-      "image_url": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": true
-    },
-    {
       "id": 5,
       "item_id": "spris",
       "category_slug": "juices",
