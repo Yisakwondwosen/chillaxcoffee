@@ -45,20 +45,6 @@
       "is_featured": false
     },
     {
-      "id": 7,
-      "item_id": "spanish-iced-latte",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "Spanish Iced Latte",
-      "price_etb": "170.00",
-      "badge": "New on Menu",
-      "description": "Double shot espresso with sweetened condensed milk",
-      "tasting_notes": "",
-      "image_url": "/Assets/chillax-inside.webp",
-      "is_available": true,
-      "is_featured": false
-    },
-    {
       "id": 2,
       "item_id": "jebena-brew",
       "category_slug": "espresso",
