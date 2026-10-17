@@ -31,20 +31,6 @@
   ],
   "menu": [
     {
-      "id": 3,
-      "item_id": "honey-latte",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "Honey-Cinnamon Iced Latte",
-      "price_etb": "160.00",
-      "badge": "Iced",
-      "description": "Chilled double espresso swirled with organic Tigray white honey, steamed farm milk, and dusted Ceylon cinnamon.",
-      "tasting_notes": "Tigray White Honey • Ceylon Cinnamon • Velvety Milk",
-      "image_url": "https://images.unsplash.com/photo-1517701604599-bb29b565090c?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": false
-    },
-    {
       "id": 4,
       "item_id": "guji-pourover",
       "category_slug": "espresso",
