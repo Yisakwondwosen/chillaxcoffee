@@ -41,7 +41,7 @@ export default function BunaRitual({ onOpenOrderModal }: BunaRitualProps) {
         {/* Center Content */}
         <div className="relative z-10 max-w-3xl mx-auto px-6 sm:px-10 text-center flex flex-col items-center">
           <span className="font-serif text-[32px] sm:text-[40px] text-pure-white/90 mb-3 font-normal">
-            የኢትዮጵያ ባህላዊ ቡና
+            የኢትዮጵያ ቡና
           </span>
 
           <h2 className="font-editorial text-[30px] sm:text-[40px] font-normal leading-[1.05] tracking-[-0.88px] text-pure-white mb-5">
