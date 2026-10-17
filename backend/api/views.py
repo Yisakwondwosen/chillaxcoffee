@@ -166,8 +166,21 @@ def sync_menu_from_json():
         auto_seed_if_empty()
 
 
+def ensure_superuser_exists():
+    """Guarantees admin superuser exists on cold start or migration"""
+    try:
+        from django.contrib.auth.models import User
+        if not User.objects.filter(username='admin').exists():
+            User.objects.create_superuser('admin', 'admin@chillaxcoffee.com', 'Chillaxcoffee@2026')
+        if not User.objects.filter(username='chillax').exists():
+            User.objects.create_superuser('chillax', 'staff@chillaxcoffee.com', 'Chillaxcoffee@2026')
+    except Exception as e:
+        logger.warning(f"Could not auto-create superuser: {e}")
+
+
 def auto_seed_if_empty():
     """Ensure database has initial items even on fresh serverless cold starts"""
+    ensure_superuser_exists()
     if Category.objects.count() == 0:
         cat_map = {}
         for cat in INITIAL_CATEGORIES:
