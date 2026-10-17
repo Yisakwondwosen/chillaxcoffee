@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from django.utils.html import format_html
 from .models import Category, MenuItem, BeanOrigin, PreOrder
@@ -31,13 +32,63 @@ class CategoryAdmin(admin.ModelAdmin):
             pass
 
 
+class MenuItemAdminForm(forms.ModelForm):
+    image_file = forms.FileField(
+        required=False,
+        label="Upload Image File (from device)",
+        help_text="Upload a photo from your computer or phone (JPG, PNG, WebP). It will automatically be committed to GitHub and synced to the site.",
+        widget=forms.FileInput(attrs={'accept': 'image/*'})
+    )
+
+    class Meta:
+        model = MenuItem
+        fields = '__all__'
+
+
 @admin.register(MenuItem)
 class MenuItemAdmin(admin.ModelAdmin):
-    list_display = ('name', 'category', 'price_etb', 'badge', 'is_available', 'is_featured')
+    form = MenuItemAdminForm
+    list_display = ('image_thumbnail', 'name', 'category', 'price_etb', 'badge', 'is_available', 'is_featured')
+    list_display_links = ('image_thumbnail', 'name')
     list_filter = ('category', 'is_available', 'is_featured')
     search_fields = ('name', 'description', 'tasting_notes')
     prepopulated_fields = {'item_id': ('name',)}
     actions = ['mark_in_stock', 'mark_sold_out']
+    fieldsets = (
+        ("Basic Information", {
+            "fields": ("name", "item_id", "category", "price_etb", "is_available", "is_featured")
+        }),
+        ("Product Details", {
+            "fields": ("badge", "description", "tasting_notes")
+        }),
+        ("Image & Media", {
+            "fields": ("image_file", "image_url", "current_image_preview"),
+            "description": "Upload a photo from your device, or enter a custom image path or URL."
+        }),
+    )
+    readonly_fields = ('current_image_preview',)
+
+    def current_image_preview(self, obj):
+        if obj and obj.image_url:
+            return format_html(
+                '<div style="margin-top: 6px;">'
+                '<img src="{}" style="max-height: 140px; max-width: 240px; border-radius: 8px; border: 1px solid #e5e7eb; object-fit: cover;" onerror="this.src=\'/Assets/chillax-inside.webp\'" />'
+                '<p style="font-size: 11px; color: #6b7280; margin-top: 4px;">Current image: <code>{}</code></p>'
+                '</div>',
+                obj.image_url,
+                obj.image_url
+            )
+        return "No image set yet"
+    current_image_preview.short_description = "Image Preview"
+
+    def image_thumbnail(self, obj):
+        if obj and obj.image_url:
+            return format_html(
+                '<img src="{}" style="width: 44px; height: 44px; border-radius: 6px; object-fit: cover; border: 1px solid #e5e7eb;" onerror="this.src=\'/Assets/chillax-inside.webp\'" />',
+                obj.image_url
+            )
+        return ""
+    image_thumbnail.short_description = "Photo"
 
     def mark_in_stock(self, request, queryset):
         queryset.update(is_available=True)
@@ -60,6 +111,20 @@ class MenuItemAdmin(admin.ModelAdmin):
     mark_sold_out.short_description = "⏸ Mark selected items as Sold-Out"
 
     def save_model(self, request, obj, form, change):
+        uploaded_file = form.cleaned_data.get('image_file') or request.FILES.get('image_file')
+        if uploaded_file:
+            try:
+                from .telegram_bot import handle_admin_uploaded_file
+                hint = obj.item_id or obj.name or "item"
+                photo_path = handle_admin_uploaded_file(uploaded_file, save_name_hint=hint)
+                if photo_path:
+                    obj.image_url = photo_path
+            except Exception as e:
+                self.message_user(request, f"Warning: Image upload had an error: {e}", level='WARNING')
+
+        if not obj.image_url:
+            obj.image_url = '/Assets/chillax-inside.webp'
+
         super().save_model(request, obj, form, change)
         try:
             from .telegram_bot import trigger_git_sync

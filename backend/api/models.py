@@ -23,7 +23,12 @@ class MenuItem(models.Model):
     badge = models.CharField(max_length=60, blank=True, help_text="e.g. Bisrate Gabriel Favorite, Heritage, Made to Order")
     description = models.TextField()
     tasting_notes = models.CharField(max_length=200, help_text="e.g. Dark Chocolate • Honey Crema • Hazelnut")
-    image_url = models.URLField(max_length=500)
+    image_url = models.CharField(
+        max_length=500,
+        blank=True,
+        default='/Assets/chillax-inside.webp',
+        help_text="Image URL or uploaded path (e.g. /uploads/... or /Assets/...)"
+    )
     is_available = models.BooleanField(default=True)
     is_featured = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)

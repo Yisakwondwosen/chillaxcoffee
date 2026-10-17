@@ -83,6 +83,94 @@ def answer_callback_query(callback_query_id, text=None, show_alert=False):
     return make_telegram_request("answerCallbackQuery", payload)
 
 
+def save_uploaded_image_bytes(photo_bytes, save_name_hint="item", ext=".jpg"):
+    """
+    Saves image bytes to:
+    1. /tmp/uploads (always writable on Vercel/Linux)
+    2. frontend/public/uploads (local dev workspace)
+    3. Directly commits photo to GitHub repository at frontend/public/uploads/{filename} via GitHub REST API
+    Returns the relative web path: f"/uploads/{filename}"
+    """
+    clean_hint = re.sub(r'[^a-z0-9_-]+', '-', save_name_hint.lower()).strip('-')[:30] or "item"
+    unique_suffix = timezone.now().strftime("%Y%m%d_%H%M%S")
+    clean_ext = ext if ext.startswith('.') else f".{ext}"
+    if clean_ext.lower() not in ('.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'):
+        clean_ext = '.jpg'
+    filename = f"{clean_hint}_{unique_suffix}{clean_ext.lower()}"
+
+    # 1. Save to /tmp/uploads (always writable on Vercel and Linux)
+    try:
+        tmp_dir = Path("/tmp") / "uploads"
+        tmp_dir.mkdir(parents=True, exist_ok=True)
+        with open(tmp_dir / filename, "wb") as f:
+            f.write(photo_bytes)
+    except Exception as te:
+        logger.warning(f"Could not save to /tmp/uploads: {te}")
+
+    # 2. Save to workspace if writable (local dev environment)
+    try:
+        upload_dir = settings.BASE_DIR.parent / "frontend" / "public" / "uploads"
+        upload_dir.mkdir(parents=True, exist_ok=True)
+        with open(upload_dir / filename, "wb") as f:
+            f.write(photo_bytes)
+    except Exception:
+        pass
+
+    # 3. DIRECTLY COMMIT PHOTO TO GITHUB REPOSITORY via REST API
+    github_token = get_github_token()
+    github_repo = get_github_repo()
+    if github_token and github_repo:
+        try:
+            p_b64 = base64.b64encode(photo_bytes).decode('utf-8')
+            p_path = f"frontend/public/uploads/{filename}"
+            p_url = f"https://api.github.com/repos/{github_repo}/contents/{p_path}"
+            headers = {
+                'Authorization': f'Bearer {github_token}',
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'Chillax-Bot'
+            }
+            p_sha = None
+            try:
+                p_req = urllib.request.Request(p_url, headers=headers)
+                with urllib.request.urlopen(p_req, timeout=10) as presp:
+                    p_info = json.loads(presp.read().decode('utf-8'))
+                    p_sha = p_info.get('sha')
+            except Exception:
+                p_sha = None
+
+            p_payload = {
+                'message': f'upload photo {filename}',
+                'content': p_b64,
+                'branch': 'main'
+            }
+            if p_sha:
+                p_payload['sha'] = p_sha
+
+            put_req = urllib.request.Request(
+                p_url,
+                data=json.dumps(p_payload).encode('utf-8'),
+                headers=headers,
+                method='PUT'
+            )
+            with urllib.request.urlopen(put_req, timeout=30) as pput:
+                logger.info(f"Photo directly committed to GitHub: {p_path}")
+        except Exception as ge:
+            logger.error(f"Error uploading photo directly to GitHub: {ge}")
+
+    logger.info(f"Successfully processed photo: /uploads/{filename}")
+    return f"/uploads/{filename}"
+
+
+def handle_admin_uploaded_file(uploaded_file, save_name_hint="item"):
+    """Handles an uploaded file from Django forms.FileField or request.FILES"""
+    if not uploaded_file:
+        return None
+    ext = os.path.splitext(uploaded_file.name)[1] or ".jpg"
+    photo_bytes = uploaded_file.read()
+    return save_uploaded_image_bytes(photo_bytes, save_name_hint=save_name_hint, ext=ext)
+
+
 def download_telegram_photo(file_id, save_name_hint="item"):
     """Downloads a photo sent to Telegram Bot, writes to /tmp, and commits directly to GitHub via REST API"""
     token = get_bot_token()
@@ -101,77 +189,12 @@ def download_telegram_photo(file_id, save_name_hint="item"):
             return None
 
         ext = os.path.splitext(file_path)[1] or ".jpg"
-        clean_hint = re.sub(r'[^a-z0-9_-]+', '-', save_name_hint.lower()).strip('-')[:30] or "item"
-        unique_suffix = timezone.now().strftime("%Y%m%d_%H%M%S")
-        filename = f"{clean_hint}_{unique_suffix}{ext}"
-
         download_url = f"https://api.telegram.org/file/bot{token}/{file_path}"
         req = urllib.request.Request(download_url)
         with urllib.request.urlopen(req, timeout=30) as resp:
             photo_bytes = resp.read()
 
-        # 1. Save to /tmp/uploads (always writable on Vercel and Linux)
-        try:
-            tmp_dir = Path("/tmp") / "uploads"
-            tmp_dir.mkdir(parents=True, exist_ok=True)
-            with open(tmp_dir / filename, "wb") as f:
-                f.write(photo_bytes)
-        except Exception as te:
-            logger.warning(f"Could not save to /tmp/uploads: {te}")
-
-        # 2. Save to workspace if writable (local dev environment)
-        try:
-            upload_dir = settings.BASE_DIR.parent / "frontend" / "public" / "uploads"
-            upload_dir.mkdir(parents=True, exist_ok=True)
-            with open(upload_dir / filename, "wb") as f:
-                f.write(photo_bytes)
-        except Exception:
-            pass
-
-        # 3. DIRECTLY COMMIT PHOTO TO GITHUB REPOSITORY via REST API
-        github_token = get_github_token()
-        github_repo = get_github_repo()
-        if github_token and github_repo:
-            try:
-                p_b64 = base64.b64encode(photo_bytes).decode('utf-8')
-                p_path = f"frontend/public/uploads/{filename}"
-                p_url = f"https://api.github.com/repos/{github_repo}/contents/{p_path}"
-                headers = {
-                    'Authorization': f'Bearer {github_token}',
-                    'Accept': 'application/vnd.github.v3+json',
-                    'Content-Type': 'application/json',
-                    'User-Agent': 'Chillax-Bot'
-                }
-                p_sha = None
-                try:
-                    p_req = urllib.request.Request(p_url, headers=headers)
-                    with urllib.request.urlopen(p_req, timeout=10) as presp:
-                        p_info = json.loads(presp.read().decode('utf-8'))
-                        p_sha = p_info.get('sha')
-                except Exception:
-                    p_sha = None
-
-                p_payload = {
-                    'message': f'bot: upload photo {filename}',
-                    'content': p_b64,
-                    'branch': 'main'
-                }
-                if p_sha:
-                    p_payload['sha'] = p_sha
-
-                put_req = urllib.request.Request(
-                    p_url,
-                    data=json.dumps(p_payload).encode('utf-8'),
-                    headers=headers,
-                    method='PUT'
-                )
-                with urllib.request.urlopen(put_req, timeout=30) as pput:
-                    logger.info(f"Photo directly committed to GitHub: {p_path}")
-            except Exception as ge:
-                logger.error(f"Error uploading photo directly to GitHub: {ge}")
-
-        logger.info(f"Successfully processed photo: /uploads/{filename}")
-        return f"/uploads/{filename}"
+        return save_uploaded_image_bytes(photo_bytes, save_name_hint=save_name_hint, ext=ext)
     except Exception as e:
         logger.error(f"Error downloading photo from Telegram: {e}")
         return None
