@@ -29,20 +29,5 @@
       "order": 4
     }
   ],
-  "menu": [
-    {
-      "id": 6,
-      "item_id": "karkade",
-      "category_slug": "juices",
-      "category_name": "Fresh Juices",
-      "name": "Hibiscus & Ginger Cooler (Karkade)",
-      "price_etb": "130.00",
-      "badge": "Refreshing",
-      "description": "Cold-steeped ruby red hibiscus flowers infused with spicy crushed Ethiopian ginger root, mint, and clover honey over ice.",
-      "tasting_notes": "Tart Hibiscus • Fiery Ginger • Wild Mint",
-      "image_url": "https://images.unsplash.com/photo-1556881286-fc6915169721?auto=format&fit=crop&w=700&q=80",
-      "is_available": true,
-      "is_featured": false
-    }
-  ]
+  "menu": []
 }
