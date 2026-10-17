@@ -142,3 +142,12 @@ TELEGRAM_STAFF_CHAT_ID = os.environ.get('TELEGRAM_STAFF_CHAT_ID', '6353858898')
 # Disable automatic trailing slash redirects to prevent infinite redirect loops on Vercel
 APPEND_SLASH = False
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://chillaxcoffee.vercel.app',
+    'https://*.vercel.app',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:8000',
+    'http://127.0.0.1:8000',
+]
+

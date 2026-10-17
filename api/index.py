@@ -18,4 +18,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'chillax_backend.settings')
 
 from django.core.wsgi import get_wsgi_application
 
-app = get_wsgi_application()
+django_app = get_wsgi_application()
+
+def app(environ, start_response):
+    path = environ.get('PATH_INFO', '')
+    if path.startswith('/admin') and not path.endswith('/') and '.' not in path:
+        environ['PATH_INFO'] = f"{path}/"
+    return django_app(environ, start_response)
