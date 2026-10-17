@@ -31,7 +31,7 @@
   ],
   "menu": [
     {
-      "id": 13,
+      "id": 12,
       "item_id": "buna",
       "category_slug": "espresso",
       "category_name": "Coffee & Espresso",
@@ -39,20 +39,6 @@
       "price_etb": "80.00",
       "badge": "New on Menu",
       "description": "Freshly prepared Buna at Chillax Coffee.",
-      "tasting_notes": "",
-      "image_url": "/Assets/chillax-inside.webp",
-      "is_available": true,
-      "is_featured": false
-    },
-    {
-      "id": 12,
-      "item_id": "yejebena-buna",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "Yejebena buna",
-      "price_etb": "90.00",
-      "badge": "New on Menu",
-      "description": "Freshly prepared Yejebena buna at Chillax Coffee.",
       "tasting_notes": "",
       "image_url": "/Assets/chillax-inside.webp",
       "is_available": true,
