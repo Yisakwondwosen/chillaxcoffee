@@ -87,20 +87,6 @@
       "is_featured": true
     },
     {
-      "id": 12,
-      "item_id": "test-item",
-      "category_slug": "espresso",
-      "category_name": "Coffee & Espresso",
-      "name": "Test item",
-      "price_etb": "150.00",
-      "badge": "New on Menu",
-      "description": "Freshly prepared Test item at Chillax Coffee.",
-      "tasting_notes": "",
-      "image_url": "/Assets/chillax-inside.webp",
-      "is_available": true,
-      "is_featured": false
-    },
-    {
       "id": 1,
       "item_id": "macchiato",
       "category_slug": "espresso",
