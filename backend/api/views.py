@@ -1,4 +1,9 @@
+import json
+import logging
+import os
 from datetime import datetime, timezone, timedelta
+from decimal import Decimal
+from django.conf import settings
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
@@ -12,6 +17,8 @@ from .serializers import (
     PreOrderSerializer,
 )
 from .telegram_bot import notify_new_order, process_telegram_update
+
+logger = logging.getLogger(__name__)
 
 # Seed dataset for instant startup
 INITIAL_CATEGORIES = [
@@ -113,6 +120,52 @@ INITIAL_MENU = [
 ]
 
 
+def sync_menu_from_json():
+    """Syncs database categories and menu items with backend/api/menu_data.json"""
+    json_path = settings.BASE_DIR / 'api' / 'menu_data.json'
+    if not json_path.exists():
+        auto_seed_if_empty()
+        return
+
+    try:
+        with open(json_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+
+        cat_map = {}
+        for cat in data.get('categories', []):
+            obj, _ = Category.objects.get_or_create(
+                slug=cat['slug'],
+                defaults={'name': cat['name'], 'icon': cat.get('icon', 'coffee'), 'order': cat.get('order', 1)}
+            )
+            cat_map[cat['slug']] = obj
+
+        valid_slugs = set()
+        for item in data.get('menu', []):
+            valid_slugs.add(item['item_id'])
+            cat_slug = item.get('category_slug', 'espresso')
+            cat_obj = cat_map.get(cat_slug) or Category.objects.first()
+            MenuItem.objects.update_or_create(
+                item_id=item['item_id'],
+                defaults={
+                    'category': cat_obj,
+                    'name': item['name'],
+                    'price_etb': Decimal(str(item['price_etb'])),
+                    'badge': item.get('badge', ''),
+                    'description': item.get('description', ''),
+                    'tasting_notes': item.get('tasting_notes', ''),
+                    'image_url': item.get('image_url', '/Assets/chillax-inside.webp'),
+                    'is_available': item.get('is_available', True),
+                    'is_featured': item.get('is_featured', False),
+                }
+            )
+
+        # Remove deleted items from database
+        MenuItem.objects.exclude(item_id__in=valid_slugs).delete()
+    except Exception as e:
+        logger.error(f"Error syncing menu from JSON: {e}")
+        auto_seed_if_empty()
+
+
 def auto_seed_if_empty():
     """Ensure database has initial items even on fresh serverless cold starts"""
     if Category.objects.count() == 0:
@@ -145,8 +198,8 @@ def auto_seed_if_empty():
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_categories(request):
-    auto_seed_if_empty()
-    categories = Category.objects.all()
+    sync_menu_from_json()
+    categories = Category.objects.all().order_by('order', 'name')
     serializer = CategorySerializer(categories, many=True)
     return Response(serializer.data)
 
@@ -154,9 +207,9 @@ def get_categories(request):
 @api_view(['GET'])
 @permission_classes([AllowAny])
 def get_menu(request):
-    auto_seed_if_empty()
+    sync_menu_from_json()
     category = request.GET.get('category')
-    items = MenuItem.objects.filter(is_available=True)
+    items = MenuItem.objects.filter(is_available=True).select_related('category').order_by('category__order', 'name')
     if category and category != 'all':
         items = items.filter(category__slug=category)
     serializer = MenuItemSerializer(items, many=True)

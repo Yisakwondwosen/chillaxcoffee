@@ -1,3 +1,4 @@
+import base64
 import json
 import logging
 import os
@@ -273,12 +274,164 @@ def handle_callback_query(callback_query):
     answer_callback_query(callback_id)
 
 
+def get_github_token():
+    return getattr(settings, 'GITHUB_TOKEN', '') or os.environ.get('GITHUB_TOKEN', '')
+
+
+def get_github_repo():
+    return getattr(settings, 'GITHUB_REPO', '') or os.environ.get('GITHUB_REPO', '') or 'Yisakwondwosen/chillaxcoffee'
+
+
+def _run_github_api_sync(action_description, chat_id=None, uploaded_photo_url=None):
+    """Commits menu_data.json and any uploaded photos to GitHub repository using REST API"""
+    token = get_github_token()
+    repo = get_github_repo()
+    if not token or not repo:
+        logger.warning("GitHub token or repo not configured. Falling back to local git.")
+        _run_git_sync(action_description, chat_id)
+        return
+
+    headers = {
+        'Authorization': f'Bearer {token}',
+        'Accept': 'application/vnd.github.v3+json',
+        'Content-Type': 'application/json',
+        'User-Agent': 'Chillax-Bot'
+    }
+
+    try:
+        # 1. If photo was uploaded, commit it to GitHub repository
+        if uploaded_photo_url and uploaded_photo_url.startswith('/uploads/'):
+            filename = uploaded_photo_url.replace('/uploads/', '').strip('/')
+            photo_dest = settings.BASE_DIR.parent / "frontend" / "public" / "uploads" / filename
+            if not photo_dest.exists():
+                photo_dest = settings.BASE_DIR / "uploads" / filename
+            if photo_dest.exists():
+                try:
+                    with open(photo_dest, 'rb') as pf:
+                        p_b64 = base64.b64encode(pf.read()).decode('utf-8')
+                    p_path = f"frontend/public/uploads/{filename}"
+                    p_url = f"https://api.github.com/repos/{repo}/contents/{p_path}"
+
+                    p_sha = None
+                    try:
+                        p_req = urllib.request.Request(p_url, headers=headers)
+                        with urllib.request.urlopen(p_req, timeout=15) as presp:
+                            p_info = json.loads(presp.read().decode('utf-8'))
+                            p_sha = p_info.get('sha')
+                    except Exception:
+                        p_sha = None
+
+                    p_payload = {
+                        'message': f'bot: upload photo for {action_description}',
+                        'content': p_b64,
+                        'branch': 'main'
+                    }
+                    if p_sha:
+                        p_payload['sha'] = p_sha
+
+                    p_put_req = urllib.request.Request(
+                        p_url,
+                        data=json.dumps(p_payload).encode('utf-8'),
+                        headers=headers,
+                        method='PUT'
+                    )
+                    urllib.request.urlopen(p_put_req, timeout=30)
+                    logger.info(f"Photo uploaded to GitHub: {p_path}")
+                except Exception as pe:
+                    logger.error(f"Error uploading photo via GitHub API: {pe}")
+
+        # 2. Serialize full database to menu_data.json
+        from .serializers import MenuItemSerializer, CategorySerializer
+        categories = Category.objects.all().order_by('order', 'name')
+        items = MenuItem.objects.all().select_related('category').order_by('category__order', 'name')
+        menu_json = {
+            'categories': CategorySerializer(categories, many=True).data,
+            'menu': MenuItemSerializer(items, many=True).data
+        }
+        json_str = json.dumps(menu_json, indent=2, ensure_ascii=False)
+
+        # Save locally as well if writable
+        try:
+            local_json_path = settings.BASE_DIR / 'api' / 'menu_data.json'
+            with open(local_json_path, 'w', encoding='utf-8') as f:
+                f.write(json_str)
+        except Exception:
+            pass
+
+        content_b64 = base64.b64encode(json_str.encode('utf-8')).decode('utf-8')
+
+        # 3. Fetch current file SHA on GitHub
+        file_path = "backend/api/menu_data.json"
+        api_url = f"https://api.github.com/repos/{repo}/contents/{file_path}"
+        current_sha = None
+
+        try:
+            get_req = urllib.request.Request(api_url, headers=headers)
+            with urllib.request.urlopen(get_req, timeout=15) as gresp:
+                gdata = json.loads(gresp.read().decode('utf-8'))
+                current_sha = gdata.get('sha')
+        except Exception:
+            current_sha = None
+
+        # 4. Commit updated menu_data.json to GitHub main branch
+        commit_payload = {
+            'message': f'bot: {action_description}',
+            'content': content_b64,
+            'branch': 'main'
+        }
+        if current_sha:
+            commit_payload['sha'] = current_sha
+
+        put_req = urllib.request.Request(
+            api_url,
+            data=json.dumps(commit_payload).encode('utf-8'),
+            headers=headers,
+            method='PUT'
+        )
+
+        with urllib.request.urlopen(put_req, timeout=30) as presp:
+            cdata = json.loads(presp.read().decode('utf-8'))
+            logger.info(f"GitHub API sync success for {action_description}: {cdata.get('commit', {}).get('sha')}")
+
+            if chat_id:
+                msg = (
+                    f"🚀 <b>Live Website Deployed!</b>\n"
+                    f"━━━━━━━━━━━━━━━━━━━━\n"
+                    f"✅ <b>Change:</b> {action_description}\n"
+                    f"🌐 Pushed to GitHub. Vercel deployment is now live:\n"
+                    f"👉 <a href=\"https://chillaxcoffee.vercel.app\">chillaxcoffee.vercel.app</a>\n"
+                    f"⏱ <i>Updates in ~45 seconds!</i>"
+                )
+                send_message(chat_id, msg)
+    except urllib.error.HTTPError as he:
+        err_msg = str(he)
+        try:
+            err_body = he.read().decode('utf-8')
+            err_json = json.loads(err_body)
+            err_msg = err_json.get('message', err_body)
+        except Exception:
+            pass
+        logger.error(f"GitHub API Error: {he.code} {err_msg}")
+        if chat_id:
+            if he.code == 403:
+                send_message(
+                    chat_id,
+                    f"⚠️ <b>GitHub Token Permission Notice:</b>\n"
+                    f"Your GitHub token needs <b>Contents: Read and write</b> permission to commit changes.\n"
+                    f"Please edit your token at: https://github.com/settings/tokens and check 'Contents -> Read & Write'."
+                )
+            else:
+                send_message(chat_id, f"⚠️ GitHub sync failed: {err_msg}")
+    except Exception as e:
+        logger.error(f"Error in _run_github_api_sync: {e}")
+
+
 def _run_git_sync(action_description, chat_id=None):
-    """Executes git commit and push in background to trigger Vercel auto-deploy"""
+    """Fallback local git commit and push if running on developer workstation"""
     try:
         repo_dir = settings.BASE_DIR.parent
         subprocess.run(
-            ["git", "add", "backend/db.sqlite3", "frontend/public/uploads/"],
+            ["git", "add", "backend/db.sqlite3", "backend/api/menu_data.json", "frontend/public/uploads/"],
             cwd=str(repo_dir),
             capture_output=True,
             text=True,
@@ -286,7 +439,7 @@ def _run_git_sync(action_description, chat_id=None):
         )
 
         status_res = subprocess.run(
-            ["git", "status", "--porcelain", "backend/db.sqlite3", "frontend/public/uploads/"],
+            ["git", "status", "--porcelain", "backend/db.sqlite3", "backend/api/menu_data.json", "frontend/public/uploads/"],
             cwd=str(repo_dir),
             capture_output=True,
             text=True,
@@ -332,9 +485,9 @@ def _run_git_sync(action_description, chat_id=None):
         logger.error(f"Error in _run_git_sync: {e}")
 
 
-def trigger_git_sync(action_description, chat_id=None):
-    """Triggers background git commit and push so Vercel auto-deploys within ~45s"""
-    t = threading.Thread(target=_run_git_sync, args=(action_description, chat_id), daemon=True)
+def trigger_git_sync(action_description, chat_id=None, uploaded_photo_url=None):
+    """Triggers background GitHub API sync so Vercel auto-deploys within ~45s"""
+    t = threading.Thread(target=_run_github_api_sync, args=(action_description, chat_id, uploaded_photo_url), daemon=True)
     t.start()
 
 
@@ -576,7 +729,7 @@ def handle_message(message):
             f"🚀 <i>Deploying live to chillaxcoffee.vercel.app (~45s)... You will receive a confirmation when deployed!</i>"
         )
         send_message(chat_id, response_text)
-        trigger_git_sync(f"add item '{new_item.name}'", chat_id=chat_id)
+        trigger_git_sync(f"add item '{new_item.name}'", chat_id=chat_id, uploaded_photo_url=img_url)
         return
 
     # Command: /delete or /remove

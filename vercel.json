@@ -32,6 +32,7 @@
     "DJANGO_SETTINGS_MODULE": "chillax_backend.settings",
     "PYTHONPATH": "backend",
     "TELEGRAM_BOT_TOKEN": "8694804931:AAE3lyyVfPGZ0rxsHKFtBMqgo0I2IxFZ_n4",
-    "TELEGRAM_STAFF_CHAT_ID": "6353858898"
+    "TELEGRAM_STAFF_CHAT_ID": "6353858898",
+    "GITHUB_REPO": "Yisakwondwosen/chillaxcoffee"
   }
 }
