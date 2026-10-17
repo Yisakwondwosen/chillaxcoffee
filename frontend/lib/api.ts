@@ -84,16 +84,35 @@ export const FALLBACK_MENU: MenuItemType[] = [
 
 function getCandidateUrls(path: string): string[] {
   const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const noSlash = cleanPath.endsWith('/') ? cleanPath.slice(0, -1) : cleanPath;
+  const withSlash = `${noSlash}/`;
+
   if (typeof window !== 'undefined') {
     return [
-      `/django-api${cleanPath}`,
-      `http://localhost:8000/api${cleanPath}`,
-      `http://127.0.0.1:8000/api${cleanPath}`,
+      `/api${noSlash}`,
+      `/api${withSlash}`,
+      `/django-api${noSlash}`,
+      `/django-api${withSlash}`,
+      `http://localhost:8000/api${withSlash}`,
+      `http://127.0.0.1:8000/api${withSlash}`,
     ];
   }
-  const base = process.env.NEXT_PUBLIC_DJANGO_API_URL || process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8000';
+  const base = process.env.NEXT_PUBLIC_DJANGO_API_URL || process.env.NEXT_PUBLIC_API_URL || '';
   const cleanBase = base.endsWith('/') ? base.slice(0, -1) : base;
-  return [`${cleanBase}/api${cleanPath}`, `http://localhost:8000/api${cleanPath}`];
+  if (cleanBase) {
+    return [
+      `${cleanBase}/api${noSlash}`,
+      `${cleanBase}/api${withSlash}`,
+      `/api${noSlash}`,
+      `/api${withSlash}`,
+    ];
+  }
+  return [
+    `/api${noSlash}`,
+    `/api${withSlash}`,
+    `http://localhost:8000/api${withSlash}`,
+    `http://127.0.0.1:8000/api${withSlash}`,
+  ];
 }
 
 export async function fetchCategories(): Promise<CategoryType[] | null> {

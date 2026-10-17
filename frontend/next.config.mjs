@@ -9,11 +9,19 @@ const nextConfig = {
     ],
   },
   async rewrites() {
-    const djangoBackend = process.env.NEXT_PUBLIC_DJANGO_API_URL || 'http://127.0.0.1:8000';
+    const djangoBackend = process.env.NEXT_PUBLIC_DJANGO_API_URL;
+    if (djangoBackend) {
+      return [
+        {
+          source: '/django-api/:path*',
+          destination: `${djangoBackend}/api/:path*`,
+        },
+      ];
+    }
     return [
       {
         source: '/django-api/:path*',
-        destination: `${djangoBackend}/api/:path*`,
+        destination: '/api/:path*',
       },
     ];
   },

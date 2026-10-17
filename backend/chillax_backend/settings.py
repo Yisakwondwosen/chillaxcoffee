@@ -80,9 +80,21 @@ WSGI_APPLICATION = 'chillax_backend.wsgi.application'
 
 # Database
 # Uses DATABASE_URL if available (e.g. Postgres on Neon/Supabase), otherwise local SQLite
+db_path = BASE_DIR / 'db.sqlite3'
+if os.environ.get('VERCEL'):
+    try:
+        import shutil
+        tmp_db = Path('/tmp/db.sqlite3')
+        if not tmp_db.exists() and db_path.exists():
+            shutil.copy2(db_path, tmp_db)
+        if tmp_db.exists():
+            db_path = tmp_db
+    except Exception:
+        pass
+
 DATABASES = {
     'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
+        default=f"sqlite:///{db_path}",
         conn_max_age=600
     )
 }
@@ -124,6 +136,9 @@ CORS_ALLOW_ALL_ORIGINS = True
 CORS_ALLOW_CREDENTIALS = True
 
 # Telegram Bot Configuration for Staff Orders & Menu Management
-TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '')
-TELEGRAM_STAFF_CHAT_ID = os.environ.get('TELEGRAM_STAFF_CHAT_ID', '')
+TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN', '8694804931:AAE3lyyVfPGZ0rxsHKFtBMqgo0I2IxFZ_n4')
+TELEGRAM_STAFF_CHAT_ID = os.environ.get('TELEGRAM_STAFF_CHAT_ID', '6353858898')
+
+# Disable automatic trailing slash redirects to prevent infinite redirect loops on Vercel
+APPEND_SLASH = False
 

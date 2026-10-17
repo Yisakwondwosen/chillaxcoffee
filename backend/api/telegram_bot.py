@@ -15,11 +15,11 @@ TELEGRAM_API_URL = "https://api.telegram.org/bot{token}/{method}"
 
 
 def get_bot_token():
-    return getattr(settings, 'TELEGRAM_BOT_TOKEN', '') or os.environ.get('TELEGRAM_BOT_TOKEN', '')
+    return getattr(settings, 'TELEGRAM_BOT_TOKEN', '') or os.environ.get('TELEGRAM_BOT_TOKEN', '') or '8694804931:AAE3lyyVfPGZ0rxsHKFtBMqgo0I2IxFZ_n4'
 
 
 def get_staff_chat_id():
-    return getattr(settings, 'TELEGRAM_STAFF_CHAT_ID', '') or os.environ.get('TELEGRAM_STAFF_CHAT_ID', '')
+    return getattr(settings, 'TELEGRAM_STAFF_CHAT_ID', '') or os.environ.get('TELEGRAM_STAFF_CHAT_ID', '') or '6353858898'
 
 
 def make_telegram_request(method, payload=None):

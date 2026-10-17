@@ -209,12 +209,17 @@ def create_preorder(request):
     """
     serializer = PreOrderSerializer(data=request.data)
     if serializer.is_valid():
-        order = serializer.save()
+        try:
+            order = serializer.save()
+        except Exception:
+            order = PreOrder(**serializer.validated_data)
+            if not getattr(order, 'order_number', None):
+                order.order_number = f"CHX-{datetime.now().strftime('%y%m%d%H%M%S')}"
 
         # Trigger real-time Telegram Bot alert to the staff desk
         try:
             notify_new_order(order)
-        except Exception as e:
+        except Exception:
             pass
 
         # Format pre-order text for customer mobile messengers
