@@ -136,7 +136,7 @@ export async function fetchMenuItems(): Promise<MenuItemType[] | null> {
       const res = await fetch(url, { cache: 'no-store' });
       if (res.ok) {
         const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) {
+        if (Array.isArray(data)) {
           return data.map((item: any) => ({
             ...item,
             price_etb: typeof item.price_etb === 'string' ? parseFloat(item.price_etb) : Number(item.price_etb || 0),

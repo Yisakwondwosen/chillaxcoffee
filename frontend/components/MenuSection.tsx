@@ -20,6 +20,7 @@ interface MenuSectionProps {
   onAddToCart: (item: MenuItemType) => void;
   onOpenCart: () => void;
   cartCount: number;
+  isLoading?: boolean;
 }
 
 const SIZES = [
@@ -35,10 +36,21 @@ export default function MenuSection({
   onAddToCart,
   onOpenCart,
   cartCount,
+  isLoading = false,
 }: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
   const [featuredItem, setFeaturedItem] = useState<MenuItemType>(items[0] || {} as MenuItemType);
+
+  React.useEffect(() => {
+    if (items.length > 0) {
+      if (!featuredItem.item_id || !items.some((i) => i.item_id === featuredItem.item_id)) {
+        setFeaturedItem(items[0]);
+      }
+    } else {
+      setFeaturedItem({} as MenuItemType);
+    }
+  }, [items]);
 
   const filteredItems = activeCategory === 'all'
     ? items
@@ -107,10 +119,24 @@ export default function MenuSection({
           {/* Left Column: Stack of Product Detail Cards (8 cols) */}
           <div className="lg:col-span-8 flex flex-col gap-8">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-              {filteredItems.length === 0 ? (
+              {isLoading ? (
                 <div className="col-span-full py-16 flex flex-col items-center justify-center gap-4 bg-fog/20 rounded-cards border border-dashed border-dove/40">
                   <div className="loader my-2" />
                   <p className="font-sans text-[13px] text-iron">Loading coffee menu from Bisrate Gabriel...</p>
+                </div>
+              ) : filteredItems.length === 0 ? (
+                <div className="col-span-full py-16 flex flex-col items-center justify-center gap-3 bg-fog/30 rounded-cards border border-dashed border-dove/60 p-8 text-center">
+                  <div className="w-12 h-12 rounded-full bg-mist/30 flex items-center justify-center text-graphite text-xl">
+                    ☕
+                  </div>
+                  <h3 className="font-sans text-[17px] text-graphite font-medium">
+                    {activeCategory === 'all'
+                      ? 'No items currently on the menu'
+                      : 'No items in this category'}
+                  </h3>
+                  <p className="font-sans text-[13px] text-iron max-w-sm leading-relaxed">
+                    All items have been removed from the menu. Add new items via your staff Telegram bot to display them here live.
+                  </p>
                 </div>
               ) : (
                 filteredItems.map((item) => {
@@ -239,14 +265,22 @@ export default function MenuSection({
                 </p>
 
                 {/* Featured Item / Price */}
-                <div className="p-4 bg-fog rounded-inputs mb-4">
-                  <span className="font-sans text-[15px] text-graphite font-normal block">
-                    {featuredItem.name || 'Double Macchiato & English Cake'}
-                  </span>
-                  <span className="font-sans text-[20px] font-medium text-graphite block mt-1">
-                    {featuredItem.price_etb || '120'} ETB
-                  </span>
-                </div>
+                {featuredItem && featuredItem.name ? (
+                  <div className="p-4 bg-fog rounded-inputs mb-4">
+                    <span className="font-sans text-[15px] text-graphite font-normal block">
+                      {featuredItem.name}
+                    </span>
+                    <span className="font-sans text-[20px] font-medium text-graphite block mt-1">
+                      {featuredItem.price_etb} ETB
+                    </span>
+                  </div>
+                ) : (
+                  <div className="p-4 bg-fog rounded-inputs mb-4">
+                    <span className="font-sans text-[13px] text-iron font-normal block">
+                      Add drinks &amp; pastries to order for pickup.
+                    </span>
+                  </div>
+                )}
               </div>
 
               {/* Action Buttons: Cobalt Primary + Ghost Dismiss */}

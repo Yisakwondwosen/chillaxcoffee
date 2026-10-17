@@ -30,7 +30,8 @@ import {
 
 export default function Home() {
   const [categories, setCategories] = useState<CategoryType[]>(FALLBACK_CATEGORIES);
-  const [menuItems, setMenuItems] = useState<MenuItemType[]>(FALLBACK_MENU);
+  const [menuItems, setMenuItems] = useState<MenuItemType[]>([]);
+  const [isLoadingMenu, setIsLoadingMenu] = useState<boolean>(true);
   const [status, setStatus] = useState<LoungeStatusType>({
     timezone: 'Africa/Addis_Ababa (UTC+3)',
     addis_time: '08:30 AM',
@@ -53,24 +54,43 @@ export default function Home() {
           fetchLoungeStatus(),
         ]);
         if (cats && cats.length > 0) setCategories(cats);
-        if (items && items.length > 0) setMenuItems(items);
+        if (items !== null) {
+          setMenuItems(items);
+        } else {
+          setMenuItems(FALLBACK_MENU);
+        }
         if (liveStatus) setStatus(liveStatus);
       } catch (e) {
         console.warn('Using local cache for Chillax Coffee');
+      } finally {
+        setIsLoadingMenu(false);
       }
     }
     loadData();
 
+    // Poll every 10 seconds so changes from Telegram bot reflect live
     const interval = setInterval(async () => {
       try {
-        const liveStatus = await fetchLoungeStatus();
+        const [items, liveStatus] = await Promise.all([
+          fetchMenuItems(),
+          fetchLoungeStatus(),
+        ]);
+        if (items !== null) setMenuItems(items);
         if (liveStatus) setStatus(liveStatus);
       } catch (e) {
         console.warn('Status refresh error:', e);
       }
-    }, 60000);
+    }, 10000);
 
-    return () => clearInterval(interval);
+    const handleFocus = () => {
+      loadData();
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener('focus', handleFocus);
+    };
   }, []);
 
   const handleAddToCart = (item: MenuItemType) => {
@@ -131,6 +151,7 @@ export default function Home() {
         onAddToCart={handleAddToCart}
         onOpenCart={() => handleOpenOrderModal()}
         cartCount={totalCartCount}
+        isLoading={isLoadingMenu}
       />
       <BentoGrid />
       <BeanTimeline />
