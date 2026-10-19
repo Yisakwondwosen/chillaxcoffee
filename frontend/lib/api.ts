@@ -11,6 +11,19 @@ export const FALLBACK_CATEGORIES: CategoryType[] = [
 
 export const FALLBACK_MENU: MenuItemType[] = [
   {
+    item_id: 'yejebena-buna',
+    name: 'Yejebena Buna',
+    description: 'Authentic Ethiopian clay-pot jebena coffee slow-brewed over charcoal, served steaming hot in traditional cini cups.',
+    price_etb: 90,
+    category_id: 'jeb',
+    category_slug: 'jebena',
+    image_url: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?auto=format&fit=crop&w=700&q=80',
+    is_available: true,
+    is_featured: true,
+    badge: 'Traditional Ceremony',
+    tasting_notes: 'Wild Rue • Bergamot • Frankincense Smoke',
+  },
+  {
     item_id: 'macchiato',
     name: 'Double Macchiato',
     description: 'Rich double espresso topped with warm steamed milk foam.',
@@ -19,6 +32,7 @@ export const FALLBACK_MENU: MenuItemType[] = [
     category_slug: 'espresso',
     image_url: '/Assets/chillax-inside.webp',
     is_available: true,
+    is_featured: true,
     badge: 'Popular',
     tasting_notes: 'Cocoa • Citrus • Caramel',
   },
@@ -143,6 +157,7 @@ export async function fetchMenuItems(): Promise<MenuItemType[] | null> {
             category_id: item.category_slug || item.category_id || 'espresso',
             category_slug: item.category_slug || 'espresso',
             is_available: item.is_available !== false,
+            is_featured: Boolean(item.is_featured),
           }));
         }
       }

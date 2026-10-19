@@ -567,10 +567,13 @@ def _run_git_sync(action_description, chat_id=None):
         logger.error(f"Error in _run_git_sync: {e}")
 
 
-def trigger_git_sync(action_description, chat_id=None, uploaded_photo_url=None):
-    """Triggers background GitHub API sync so Vercel auto-deploys within ~45s"""
-    t = threading.Thread(target=_run_github_api_sync, args=(action_description, chat_id, uploaded_photo_url), daemon=True)
-    t.start()
+def trigger_git_sync(action_description, chat_id=None, uploaded_photo_url=None, sync_now=False):
+    """Triggers GitHub API sync. On Vercel serverless or when sync_now=True, runs synchronously to ensure execution before container freezes."""
+    if sync_now or os.environ.get('VERCEL') == '1':
+        _run_github_api_sync(action_description, chat_id, uploaded_photo_url)
+    else:
+        t = threading.Thread(target=_run_github_api_sync, args=(action_description, chat_id, uploaded_photo_url), daemon=True)
+        t.start()
 
 
 def save_staff_chat_id(chat_id):
@@ -595,7 +598,7 @@ def save_staff_chat_id(chat_id):
 
 
 def handle_message(message):
-    """Processes staff commands (/add, /delete, /toggle, /menu, /orders, /today, etc.)"""
+    """Processes staff commands (/add, /delete, /toggle, /menu, /orders, /today, etc.) and customer order tracking"""
     chat_id = message.get("chat", {}).get("id")
     text = (message.get("text") or message.get("caption") or "").strip()
     user = message.get("from", {}).get("first_name", "Staff")
@@ -622,11 +625,43 @@ def handle_message(message):
 
     # Command: /start or /help
     if text.startswith(("/start", "/help")):
+        # Check if customer clicked deep link from website, e.g. /start order_CHX-123456
+        parts = text.split()
+        if len(parts) > 1 and parts[1].startswith("order_"):
+            order_num = parts[1].replace("order_", "").strip()
+            try:
+                order = PreOrder.objects.get(order_number=order_num)
+                status_icons = {
+                    'PENDING': '⏳ Pending Confirmation',
+                    'BREWING': '☕ Brewing & Preparing in Cafe',
+                    'READY': '✅ Ready for Pickup at Bisrate Gabriel!',
+                    'DELIVERY': '🛵 Out for Delivery',
+                    'COMPLETED': '🏁 Completed & Picked Up',
+                    'CANCELLED': '❌ Cancelled',
+                }
+                status_text = status_icons.get(order.status, order.status)
+                reply = (
+                    f"☕ <b>CHILLAX COFFEE ORDER #{order.order_number}</b>\n"
+                    f"━━━━━━━━━━━━━━━━━━━━\n"
+                    f"👤 <b>Guest:</b> {order.customer_name}\n"
+                    f"⏰ <b>Pickup Time:</b> {order.pickup_time}\n"
+                    f"💰 <b>Total:</b> {float(order.total_etb):.0f} ETB\n"
+                    f"📍 <b>Location:</b> Bisrate Gabriel, Addis Ababa\n"
+                    f"━━━━━━━━━━━━━━━━━━━━\n"
+                    f"Status: <b>{status_text}</b>\n\n"
+                    f"<i>Our baristas are preparing your highland roast with care. Enjoy your coffee!</i>"
+                )
+                send_message(chat_id, reply)
+                return
+            except PreOrder.DoesNotExist:
+                send_message(chat_id, f"Order #{order_num} was received! Our baristas in Bisrate Gabriel are on it.")
+                return
+
         welcome = (
-            f"👋 <b>Welcome to Chillax Coffee Staff Bot!</b>\n"
+            f"👋 <b>Welcome to Chillax Coffee Bot!</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
-            f"Use this bot to manage live website orders and menu items directly on the website.\n\n"
-            f"<b>Available Commands:</b>\n"
+            f"Official bot for <b>Chillax Coffee</b> (Bisrate Gabriel, Addis Ababa).\n\n"
+            f"<b>Staff Commands:</b>\n"
             f"• <code>/menu</code>: View all menu items on the website\n"
             f"• <code>/add Name | Price | Category | Description</code>: Add a new item\n"
             f"• <code>/delete &lt;Item Name&gt;</code>: Delete an item from the website\n"
@@ -638,9 +673,7 @@ def handle_message(message):
             f"<b>How to add with a Photo:</b>\n"
             f"1. Attach or take a photo in Telegram\n"
             f"2. Add caption: <code>/add Name | Price | Category | Description</code>\n"
-            f"3. Send! The photo is saved and published live on the website.\n\n"
-            f"<b>Example deleting an item:</b>\n"
-            f"<code>/delete machiato</code>"
+            f"3. Send! The photo is saved and published live on the website."
         )
         send_message(chat_id, welcome)
         return

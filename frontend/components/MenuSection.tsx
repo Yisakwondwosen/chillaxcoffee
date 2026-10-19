@@ -40,13 +40,20 @@ export default function MenuSection({
 }: MenuSectionProps) {
   const [activeCategory, setActiveCategory] = useState<string>('all');
   const [selectedSizes, setSelectedSizes] = useState<Record<string, string>>({});
-  const [featuredItem, setFeaturedItem] = useState<MenuItemType>(items[0] || {} as MenuItemType);
+  const [featuredItem, setFeaturedItem] = useState<MenuItemType>(() => {
+    const featured = items.find((i) => i.item_id === 'yejebena-buna' || i.name.toLowerCase().includes('yejebena'))
+      || items.find((i) => i.is_featured)
+      || items[0]
+      || ({} as MenuItemType);
+    return featured;
+  });
 
   React.useEffect(() => {
     if (items.length > 0) {
-      if (!featuredItem.item_id || !items.some((i) => i.item_id === featuredItem.item_id)) {
-        setFeaturedItem(items[0]);
-      }
+      const featured = items.find((i) => i.item_id === 'yejebena-buna' || i.name.toLowerCase().includes('yejebena'))
+        || items.filter((i) => i.is_featured).pop()
+        || items[0];
+      setFeaturedItem(featured);
     } else {
       setFeaturedItem({} as MenuItemType);
     }
@@ -177,9 +184,14 @@ export default function MenuSection({
                     </div>
 
                     <CardHeader className="flex-grow p-5">
-                      <CardAction className="mb-1">
+                      <CardAction className="mb-1.5 flex items-center gap-1.5 flex-wrap">
+                        {item.is_featured && (
+                          <Badge variant="default" className="bg-amber-600 hover:bg-amber-700 text-white border-transparent text-[10px] font-mono tracking-wider uppercase font-semibold">
+                            ★ Featured
+                          </Badge>
+                        )}
                         <Badge variant="secondary">
-                          {item.badge || 'Highland Spec'}
+                          {item.badge || 'Bisrate Gabriel Roast'}
                         </Badge>
                       </CardAction>
 

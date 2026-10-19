@@ -185,10 +185,54 @@ export default function PreOrderModal({
               💵 <b>Payment Method:</b> Pay upon arrival or delivery with <b>Telebirr</b>, <b>CBE Birr</b>, or <b>Cash</b>.
             </div>
 
+            {/* Live Telegram Bot Notification & Tracking */}
+            <div className="bg-[#24A1DE]/10 border border-[#24A1DE]/30 rounded-[14px] p-4 flex flex-col gap-3">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-full bg-[#24A1DE] text-white flex items-center justify-center shrink-0 text-xl font-bold">
+                  ✈️
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-sans font-medium text-[14px] text-graphite">
+                      Chillax Coffee Bot
+                    </h4>
+                    <span className="text-[10px] bg-[#24A1DE] text-white px-1.5 py-0.5 rounded font-mono font-medium">
+                      LIVE
+                    </span>
+                  </div>
+                  <p className="text-[12px] text-iron mt-0.5 leading-snug">
+                    Your order was sent directly to our baristas. Open <b>@ChillaxCoffee_order_bot</b> on Telegram to track when your order is Brewing &amp; Ready!
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex flex-col sm:flex-row gap-2 mt-1">
+                <a
+                  href={`https://t.me/ChillaxCoffee_order_bot?start=order_${orderResult.order_number}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex-1 py-2.5 px-3 bg-[#24A1DE] hover:bg-[#1f8fc6] text-white rounded-buttons text-[13px] font-medium text-center flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                >
+                  <span>Open in Telegram Bot</span>
+                  <span>→</span>
+                </a>
+                {orderResult.whatsapp_url && (
+                  <a
+                    href={orderResult.whatsapp_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="py-2.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-buttons text-[13px] font-medium text-center flex items-center justify-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                  >
+                    <span>WhatsApp</span>
+                  </a>
+                )}
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={handleFinish}
-              className="btn-cobalt w-full py-3.5 rounded-buttons text-[14px] font-medium text-center shadow-sm hover:shadow cursor-pointer mt-2"
+              className="btn-cobalt w-full py-3.5 rounded-buttons text-[14px] font-medium text-center shadow-sm hover:shadow cursor-pointer mt-1"
             >
               Done &amp; Back to Menu
             </button>
@@ -513,6 +557,14 @@ export default function PreOrderModal({
               <span className="text-[13px] text-graphite">Total Price:</span>
               <span className="text-[20px] font-bold text-graphite">
                 {totalAmount} ETB
+              </span>
+            </div>
+
+            {/* Telegram Notification Badge */}
+            <div className="flex items-center gap-2.5 p-3 bg-[#24A1DE]/10 rounded-[12px] border border-[#24A1DE]/25 text-[12px] text-graphite">
+              <span className="text-[#24A1DE] text-base">✈️</span>
+              <span className="leading-tight">
+                Directly connected to <b>@ChillaxCoffee_order_bot</b>. Baristas at our Bisrate Gabriel cafe get instant audio alerts upon order placement.
               </span>
             </div>
 

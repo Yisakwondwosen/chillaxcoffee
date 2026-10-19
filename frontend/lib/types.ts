@@ -14,6 +14,7 @@ export interface MenuItemType {
   category_slug: string;
   image_url: string;
   is_available: boolean;
+  is_featured?: boolean;
   tags?: string[];
   badge?: string;
   tasting_notes?: string;
@@ -39,6 +40,7 @@ export interface OrderResponseType {
   total_etb: number;
   dispatch_text: string;
   telegram_share_url: string;
+  telegram_bot_url?: string;
   whatsapp_url: string;
 }
 

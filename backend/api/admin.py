@@ -18,7 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
         try:
             from .telegram_bot import trigger_git_sync
             action = f"admin update category '{obj.name}'" if change else f"admin add category '{obj.name}'"
-            trigger_git_sync(action)
+            trigger_git_sync(action, sync_now=True)
         except Exception:
             pass
 
@@ -27,7 +27,7 @@ class CategoryAdmin(admin.ModelAdmin):
         super().delete_model(request, obj)
         try:
             from .telegram_bot import trigger_git_sync
-            trigger_git_sync(f"admin delete category '{name}'")
+            trigger_git_sync(f"admin delete category '{name}'", sync_now=True)
         except Exception:
             pass
 
@@ -94,7 +94,7 @@ class MenuItemAdmin(admin.ModelAdmin):
         queryset.update(is_available=True)
         try:
             from .telegram_bot import trigger_git_sync
-            trigger_git_sync("admin mark items in stock")
+            trigger_git_sync("admin mark items in stock", sync_now=True)
         except Exception:
             pass
         self.message_user(request, "Selected items marked as In-Stock.")
@@ -104,7 +104,7 @@ class MenuItemAdmin(admin.ModelAdmin):
         queryset.update(is_available=False)
         try:
             from .telegram_bot import trigger_git_sync
-            trigger_git_sync("admin mark items sold out")
+            trigger_git_sync("admin mark items sold out", sync_now=True)
         except Exception:
             pass
         self.message_user(request, "Selected items marked as Sold-Out.")
@@ -129,7 +129,8 @@ class MenuItemAdmin(admin.ModelAdmin):
         try:
             from .telegram_bot import trigger_git_sync
             action = f"admin update item '{obj.name}'" if change else f"admin add item '{obj.name}'"
-            trigger_git_sync(action, uploaded_photo_url=obj.image_url)
+            trigger_git_sync(action, uploaded_photo_url=obj.image_url, sync_now=True)
+            self.message_user(request, f"Item '{obj.name}' saved and synced live to chillaxcoffee.vercel.app!")
         except Exception:
             pass
 
@@ -138,7 +139,7 @@ class MenuItemAdmin(admin.ModelAdmin):
         super().delete_model(request, obj)
         try:
             from .telegram_bot import trigger_git_sync
-            trigger_git_sync(f"admin delete item '{name}'")
+            trigger_git_sync(f"admin delete item '{name}'", sync_now=True)
         except Exception:
             pass
 
